@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleSection(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100 flex h-screen overflow-hidden">
+
+    <div class="w-64 bg-emerald-900 text-white flex flex-col shadow-2xl z-20">
+        <div class="p-6 bg-emerald-950 text-center border-b border-emerald-800">
+            <h2 class="text-2xl font-bold tracking-wider">{{ user.bank }}</h2>
+            <p class="text-emerald-300 text-sm mt-1">Personal Banking</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="toggleSection('profile')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">👤 Profile &
+                Balance</button>
+            <button onclick="toggleSection('transfer')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">🔄 Secure
+                Transfer</button>
+            <button onclick="toggleSection('deposit')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">💵 Deposit
+                Funds</button>
+            <button onclick="toggleSection('statement')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">📄 Mini
+                Statement</button>
+        </nav>
+        <div class="p-4 border-t border-emerald-800">
+            <a href="/"
+                class="block w-full text-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition font-bold shadow">Logout</a>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto relative">
+        <div class="h-48 w-full bg-cover bg-center shadow-inner"
+            style="background-image: url('https://images.unsplash.com/photo-1565514020179-026b92b84bb6?auto=format&fit=crop&w=1200&q=80');">
+            <div class="w-full h-full bg-emerald-900/60 flex items-center px-10">
+                <h2 class="text-4xl text-white font-bold drop-shadow-md">Welcome back, {{ user.first_name if
+                    user.first_name else 'User' }}</h2>
+            </div>
+        </div>
+
+        {% if user.status == 'locked' %}
+        <div class="bg-red-600 text-white p-4 shadow-lg animate-pulse flex items-center justify-center space-x-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+            </svg>
+            <div>
+                <h3 class="font-bold text-lg">SECURITY ALERT: ACCOUNT LOCKED</h3>
+                <p class="text-sm">We detected anomalous behavior on your account. All outgoing transfers have been
+                    frozen to protect your funds. Please contact your branch.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="p-10 max-w-4xl mx-auto">
+
+            <div id="profile" class="dashboard-section bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
+                <div class="flex justify-between items-start mb-6 border-b pb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Account Overview</h3>
+                        <p class="text-gray-500 text-sm font-mono mt-1">A/C: {{ user.account_number if
+                            user.account_number else 'Pending Generation' }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500 uppercase tracking-widest">Available Balance</p>
+                        <p class="text-4xl font-extrabold text-emerald-600">₹{{ user.balance }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 text-gray-700 mb-6">
+                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Mobile:</strong> {{ user.mobile }}</p>
+                    <p><strong>Address:</strong> {{ user.address }}</p>
+                    <p><strong>Status:</strong> <span
+                            class="{% if user.status == 'active' %}text-emerald-600{% elif user.status == 'locked' %}text-red-600{% else %}text-amber-500{% endif %} font-bold uppercase text-sm">{{
+                            user.status }}</span></p>
+                </div>
+
+                <form action="/user/edit/{{ user._id }}" method="POST"
+                    class="bg-gray-50 p-6 rounded-lg border border-gray-200 mt-4 space-y-4">
+                    <h4 class="font-bold text-gray-700 mb-2">Update Details</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="First Name"
+                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Last Name"
+                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input type="text" name="mobile" value="{{ user.mobile }}" placeholder="Mobile Number"
+                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input type="text" name="address" value="{{ user.address }}" placeholder="Address"
+                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-emerald-600 text-white font-bold py-2 rounded hover:bg-emerald-700 transition">Save
+                        Changes</button>
+                </form>
+            </div>
+
+            <div id="transfer"
+                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Transfer Funds via Blockchain</h3>
+                <p class="text-gray-500 mb-6">Transfers are cryptographically secured and verified by an Auditor.</p>
+
+                {% if user.status == 'active' %}
+                <form action="/user/transfer/{{ user._id }}" method="POST" class="space-y-4 max-w-lg">
+                    <input type="text" name="recipient_account" placeholder="Recipient Account Number" required
+                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50">
+                    <input type="number" name="amount" placeholder="Amount (INR)" required
+                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50">
+                    <button type="submit"
+                        class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 transition shadow-md">Initiate
+                        Secure Transfer</button>
+                </form>
+                {% elif user.status == 'locked' %}
+                <div class="bg-red-50 border-l-4 border-red-600 p-4 text-red-800 font-bold">Transfers disabled. Account
+                    is currently locked for security review.</div>
+                {% else %}
+                <div class="bg-amber-100 border-l-4 border-amber-500 p-4 text-amber-700 font-bold">Account pending admin
+                    approval. Transfers disabled.</div>
+                {% endif %}
+            </div>
+
+            <div id="deposit"
+                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Request Deposit</h3>
+                <p class="text-gray-500 mb-6">Deposit requests are processed and verified by Bank Agents.</p>
+
+                {% if user.status == 'active' %}
+                <form action="/user/deposit/{{ user._id }}" method="POST" class="space-y-4 max-w-lg">
+                    <input type="number" name="deposit_amount" placeholder="Deposit Amount (INR)" required
+                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50">
+                    <button type="submit"
+                        class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 transition shadow-md">Submit
+                        Deposit Request</button>
+                </form>
+                {% elif user.status == 'locked' %}
+                <div class="bg-red-50 border-l-4 border-red-600 p-4 text-red-800 font-bold">Deposits disabled. Account
+                    is currently locked for security review.</div>
+                {% else %}
+                <div class="bg-amber-100 border-l-4 border-amber-500 p-4 text-amber-700 font-bold">Account pending admin
+                    approval. Deposits disabled.</div>
+                {% endif %}
+            </div>
+
+            <div id="statement"
+                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Blockchain Ledger Statement</h3>
+                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    {% if transactions.length > 0 %}
+                    {% for tx in transactions %}
+                    <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                {% if tx.transaction_data.type == 'deposit' %}
+                                <p class="text-lg font-bold text-emerald-700">Deposit: +₹{{ tx.transaction_data.amount
+                                    }}</p>
+                                <p class="text-sm text-gray-600">Self Deposit</p>
+
+                                {% elif tx.transaction_data.type == 'transfer' %}
+                                {% if tx.transaction_data.sender_account == user.account_number %}
+                                <p class="text-lg font-bold text-red-600">Transfer Out: -₹{{ tx.transaction_data.amount
+                                    }}</p>
+                                <p class="text-sm text-gray-600">To A/C: <span class="font-mono">{{
+                                        tx.transaction_data.recipient_account }}</span></p>
+                                {% else %}
+                                <p class="text-lg font-bold text-emerald-700">Received Transfer: +₹{{
+                                    tx.transaction_data.amount }}</p>
+                                <p class="text-sm text-gray-600">From A/C: <span class="font-mono">{{
+                                        tx.transaction_data.sender_account }}</span></p>
+                                {% endif %}
+                                {% endif %}
+
+                                <p class="text-xs text-gray-500 mt-1">{{ tx.timestamp }}</p>
+                            </div>
+
+                            <div>
+                                {% if tx.transaction_data.status == 'approved' %}
+                                <span
+                                    class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300">Verified
+                                    & Settled</span>
+                                {% elif tx.transaction_data.status == 'flagged_fraud' %}
+                                <span
+                                    class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full border border-red-300">Flagged
+                                    & Frozen</span>
+                                {% else %}
+                                <span
+                                    class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">Pending
+                                    Verification</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-3 bg-gray-900 text-emerald-400 p-2 rounded font-mono text-xs overflow-x-auto">
+                            <p><strong>Tx Hash:</strong> {{ tx.hash }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-gray-500 italic">No transactions found for this account.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

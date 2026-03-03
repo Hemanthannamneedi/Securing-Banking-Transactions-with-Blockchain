@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        let currentFormToSubmit = null;
+        function openModal(formId) {
+            currentFormToSubmit = document.getElementById(formId);
+            document.getElementById('confirmationModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            currentFormToSubmit = null;
+            document.getElementById('confirmationModal').classList.add('hidden');
+        }
+        function confirmAction() {
+            if (currentFormToSubmit) { currentFormToSubmit.submit(); }
+        }
+        function toggleSection(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 flex h-screen overflow-hidden">
+
+    <div id="confirmationModal"
+        class="hidden fixed inset-0 bg-slate-900 bg-opacity-80 flex items-center justify-center z-50 transition-opacity">
+        <div
+            class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full border-t-4 border-cyan-500 transform transition-all scale-105">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Confirm Admin Action</h3>
+            <p class="text-slate-600 mb-6">Are you sure you want to authorize this request and permanently update the
+                secure ledger?</p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 bg-slate-200 text-slate-800 rounded hover:bg-slate-300 transition">Cancel</button>
+                <button onclick="confirmAction()"
+                    class="px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition shadow">Yes,
+                    Authorize</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-64 bg-slate-950 text-white flex flex-col shadow-2xl z-20 border-r border-slate-800">
+        <div class="p-6 bg-slate-900 text-center border-b border-slate-800">
+            <h2 class="text-2xl font-bold tracking-wider text-cyan-400">Admin Portal</h2>
+            <p class="text-slate-400 text-sm mt-1">Superuser Access</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="toggleSection('requests')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition text-slate-300 hover:text-cyan-300 font-medium border border-transparent hover:border-cyan-800">👥
+                Account Requests</button>
+            <button onclick="toggleSection('transfers')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition text-slate-300 hover:text-cyan-300 font-medium border border-transparent hover:border-cyan-800">💸
+                Process Transfers</button>
+            <button onclick="toggleSection('deposits')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition text-slate-300 hover:text-cyan-300 font-medium border border-transparent hover:border-cyan-800">💵
+                Process Deposits</button>
+            <a href="/behavior?role=admin"
+                class="block w-full text-left px-4 py-3 rounded-lg hover:bg-red-900/80 bg-slate-900 transition text-red-400 font-medium mt-6 border border-slate-800 hover:border-red-800">
+                ⚠️ Fraud Analysis</a>
+        </nav>
+        <div class="p-4 border-t border-slate-800">
+            <a href="/"
+                class="block w-full text-center px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition font-bold shadow text-slate-300">Logout</a>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto relative bg-slate-100">
+        <div class="h-40 w-full bg-cover bg-center shadow-inner"
+            style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80');">
+            <div class="w-full h-full bg-slate-900/80 flex items-center px-10">
+                <h2 class="text-3xl text-white font-bold drop-shadow-md">System Administration</h2>
+            </div>
+        </div>
+
+        <div class="p-10 max-w-5xl mx-auto">
+
+            <div id="requests" class="dashboard-section bg-white p-8 rounded-xl shadow-xl border-t-4 border-cyan-600">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-2">Pending Account
+                    Registrations</h3>
+                <div class="space-y-4">
+                    {% if pending_users.length > 0 %}
+                    {% for user in pending_users %}
+                    <div
+                        class="flex justify-between items-center p-5 bg-slate-50 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
+                        <div>
+                            <p class="text-lg font-bold text-slate-900">{{ user.email }}</p>
+                            <p class="text-sm text-slate-600">Registered Bank: <span
+                                    class="font-semibold text-cyan-700">{{ user.bank }}</span></p>
+                        </div>
+                        <form id="form-user-{{ user._id }}" action="/admin/approve/{{ user._id }}" method="POST">
+                            <button type="button" onclick="openModal('form-user-{{ user._id }}')"
+                                class="bg-cyan-600 text-white px-5 py-2 rounded-lg hover:bg-cyan-700 transition font-bold shadow-md transform hover:scale-105">Approve
+                                & Assign A/C</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="bg-slate-100 border-l-4 border-cyan-500 text-slate-700 p-6 rounded-r-lg" role="alert">
+                        <p class="italic">No pending registration requests.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="transfers"
+                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-xl border-t-4 border-cyan-600">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-2">Pending Blockchain
+                    Transfers</h3>
+                <div class="space-y-4">
+                    {% if pending_transfers.length > 0 %}
+                    {% for tx in pending_transfers %}
+                    <div
+                        class="p-5 bg-slate-50 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <p class="text-xl font-bold text-cyan-900">Transfer: ₹{{ tx.transaction_data.amount }}
+                                </p>
+                                <p class="text-sm text-slate-700 mt-1">From A/C: <span class="font-mono font-bold">{{
+                                        tx.transaction_data.sender_account }}</span></p>
+                                <p class="text-sm text-slate-700">To A/C: <span class="font-mono font-bold">{{
+                                        tx.transaction_data.recipient_account }}</span></p>
+                            </div>
+                            <form id="form-tx-{{ tx._id }}" action="/admin/approve_transfer/{{ tx._id }}" method="POST">
+                                <button type="button" onclick="openModal('form-tx-{{ tx._id }}')"
+                                    class="bg-cyan-600 text-white px-5 py-2 rounded-lg hover:bg-cyan-700 transition font-bold shadow-md transform hover:scale-105">Sign
+                                    & Approve Block</button>
+                            </form>
+                        </div>
+                        <div
+                            class="bg-slate-900 text-cyan-400 p-3 rounded font-mono text-xs overflow-x-auto shadow-inner">
+                            <p><strong>Hash:</strong> {{ tx.hash }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="bg-slate-100 border-l-4 border-cyan-500 text-slate-700 p-6 rounded-r-lg" role="alert">
+                        <p class="italic">No pending transfers require verification.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="deposits"
+                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-xl border-t-4 border-cyan-600">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-2">Pending Deposit
+                    Requests</h3>
+                <div class="space-y-4">
+                    {% if pending_deposits.length > 0 %}
+                    {% for tx in pending_deposits %}
+                    <div
+                        class="p-5 bg-slate-50 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <p class="text-2xl font-black text-green-600">+ ₹{{ tx.transaction_data.amount }}</p>
+                                <p class="text-sm text-slate-600 mt-1">Deposited by A/C: <span
+                                        class="font-mono font-bold text-slate-800">{{ tx.transaction_data.account_number
+                                        }}</span></p>
+                            </div>
+                            <form id="form-dep-{{ tx._id }}" action="/admin/approve_deposit/{{ tx._id }}" method="POST">
+                                <button type="button" onclick="openModal('form-dep-{{ tx._id }}')"
+                                    class="bg-cyan-600 text-white px-5 py-2 rounded-lg hover:bg-cyan-700 transition font-bold shadow-md transform hover:scale-105">Authorize
+                                    Deposit</button>
+                            </form>
+                        </div>
+                        <div
+                            class="bg-slate-900 text-green-400 p-3 rounded font-mono text-xs overflow-x-auto shadow-inner">
+                            <p><strong>Hash Proof:</strong> {{ tx.hash }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="bg-slate-100 border-l-4 border-cyan-500 text-slate-700 p-6 rounded-r-lg" role="alert">
+                        <p class="italic">No pending deposit verifications.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Statement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <div class="bg-blue-800 text-white p-4 shadow flex justify-between items-center">
+        <h2 class="text-xl font-bold">SecureChain Bank - Mini Statement</h2>
+        <a href="/user/{{ user._id }}" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 transition">← Back to
+            Dashboard</a>
+    </div>
+
+    <div class="container mx-auto mt-10 max-w-4xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h3 class="text-2xl font-semibold mb-6 border-b pb-2">Transaction History for A/C: <span
+                    class="font-mono text-blue-900">{{ user.account_number }}</span></h3>
+
+            <div class="space-y-4">
+                {% if transactions %}
+                {% for tx in transactions %}
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            {% if tx.transaction_data.type == 'deposit' %}
+                            <p class="text-lg font-bold text-green-700">Deposit: +₹{{ tx.transaction_data.amount }}</p>
+                            {% else %}
+                            <p class="text-lg font-bold text-red-600">Transfer: -₹{{ tx.transaction_data.amount }}</p>
+                            <p class="text-sm text-gray-600">To: {{ tx.transaction_data.recipient_account }}</p>
+                            {% endif %}
+                            <p class="text-xs text-gray-500">{{ tx.timestamp }}</p>
+                        </div>
+
+                        <div>
+                            {% if tx.transaction_data.status == 'approved' %}
+                            <span
+                                class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full border border-green-300">Approved</span>
+                            {% else %}
+                            <span
+                                class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full border border-yellow-300">Pending</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-3 bg-gray-800 text-green-400 p-2 rounded font-mono text-xs overflow-x-auto">
+                        <p><strong>Tx Hash:</strong> {{ tx.hash }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-gray-500 italic">No transactions found for this account.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
