@@ -17,7 +17,7 @@ nunjucks.configure(path.join(__dirname, 'templates'), {
 });
 
 // --- DATABASE SETUP ---
-const uri = 'mongodb://127.0.0.1:27017/';
+const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/';
 const client = new MongoClient(uri);
 let db, usersCollection, transactionsCollection;
 

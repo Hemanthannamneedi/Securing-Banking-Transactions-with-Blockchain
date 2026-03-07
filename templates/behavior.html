@@ -103,8 +103,8 @@
     </div>
 
     <script>
-        const flaggedData = {{ chartData | safe }};
-        const flaggedLabels = {{ chartLabels | safe }};
+        const labels = JSON.parse('{{ chartLabels | safe }}');
+        const data = JSON.parse('{{ chartData | safe }}');
 
         const ctx = document.getElementById('fraudChart').getContext('2d');
 

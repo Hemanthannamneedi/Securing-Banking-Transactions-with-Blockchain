@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
@@ -15,8 +15,5 @@
     "express": "^5.2.1",
     "mongodb": "^6.21.0",
     "nunjucks": "^3.2.4"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
   }
 }
