@@ -3,138 +3,159 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Behavior & Fraud Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureChain | Fraud Analysis</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
 
 <body class="bg-slate-50 min-h-screen">
 
-    <div class="bg-slate-950 text-white p-4 shadow-md flex justify-between items-center border-b-4 border-red-600">
-        <div class="flex items-center space-x-3">
-            <span class="text-2xl">⚠️</span>
-            <h2 class="text-xl font-bold tracking-wider text-red-500">Financial Fraud & Human Behavior Analysis</h2>
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-red-900 text-white pb-24 pt-8 px-8 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-red-500/20 p-3 rounded-lg border border-red-400/30">
+                        <i class="fas fa-shield-virus text-red-400 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-white">Fraud Analysis & Security</h1>
+                        <p class="text-red-200 mt-1 text-sm font-medium">Monitor anomalous behavior and locked assets
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" onclick="window.location.replace('/{{ currentRole }}');"
+                class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-lg flex items-center backdrop-blur-sm cursor-pointer">
+                <i class="fas fa-arrow-left mr-2 text-slate-300"></i> Return to Dashboard
+            </button>
         </div>
-        <button onclick="window.history.back()"
-            class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 transition text-sm font-bold shadow">
-            ← Return to Dashboard
-        </button>
     </div>
 
-    <div class="container mx-auto mt-8 max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="max-w-7xl mx-auto px-8 -mt-16 pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
-            <h3 class="text-xl font-bold mb-4 border-b pb-2 text-slate-800">📊 Anomaly Volume Analysis</h3>
-            <div class="relative h-[300px] w-full">
-                <canvas id="fraudChart"></canvas>
-            </div>
-            <p class="text-xs text-slate-500 mt-4 text-center">Chart displays flagged transactions exceeding ₹50,000
-                threshold.</p>
-        </div>
+            <div
+                class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 transition hover:shadow-xl duration-300">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-5 mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center">
+                        <i class="fas fa-user-lock text-red-500 mr-3 text-2xl"></i> Quarantined Accounts
+                    </h2>
+                </div>
 
-        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200 flex flex-col h-full max-h-[450px]">
-            <h3 class="text-xl font-bold mb-4 border-b pb-2 text-red-700">🚨 Flagged Transactions (> ₹50k)</h3>
-
-            <div class="overflow-y-auto space-y-4 pr-2">
-                {% if flagged_transactions.length > 0 %}
-                {% for tx in flagged_transactions %}
-                <div class="p-4 bg-red-50 border border-red-200 rounded-lg shadow-sm hover:shadow-md transition">
-                    <div class="flex justify-between items-center mb-2">
+                <div class="space-y-4">
+                    {% set hasLockedUsers = false %}
+                    {% for u in users %}
+                    {% if u.status == 'locked' %}
+                    {% set hasLockedUsers = true %}
+                    <div
+                        class="flex items-center justify-between p-5 bg-red-50/50 border border-red-100 rounded-xl hover:border-red-200 transition-colors">
                         <div>
-                            <p class="font-bold text-red-700 text-lg">₹{{ tx.transaction_data.amount }} <span
-                                    class="text-sm font-normal text-slate-600 uppercase">({{ tx.transaction_data.type
-                                    }})</span></p>
-                            <p class="text-xs text-slate-600 font-mono mt-1">User ID: {{ tx.transaction_data.user_id }}
-                            </p>
+                            <p class="font-bold text-red-900 text-lg">{{ u.first_name }} {{ u.last_name }}</p>
+                            <p class="text-sm text-red-600 font-mono bg-red-100/50 px-2 py-1 rounded inline-block mt-1">
+                                Acc: {{ u.account_number }}</p>
                         </div>
-                        <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">High
-                            Risk</span>
-                    </div>
-                </div>
-                {% endfor %}
-                {% else %}
-                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded text-emerald-800">
-                    <p class="font-bold">No anomalies detected.</p>
-                    <p class="text-sm">All recent transactions fall within standard behavioral parameters.</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
 
-        <div class="md:col-span-2 bg-white p-8 rounded-xl shadow-lg border border-slate-200 mb-10">
-            <h3 class="text-xl font-bold mb-6 border-b pb-2 text-slate-800">👥 Complete User Activity Log</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {% for user in users %}
-                <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex flex-col justify-between">
-                    <div>
-                        <p class="font-bold text-slate-800 truncate" title="{{ user.email }}">{{ user.email }}</p>
-                        <p class="text-sm text-slate-500 mb-2">{{ user.bank }}</p>
-                    </div>
-                    <div class="flex justify-between items-end mt-4">
-                        {% if user.status == 'locked' %}
-                        <span class="text-xs font-bold uppercase text-red-600 animate-pulse">LOCKED</span>
+                        {% if currentRole == 'admin' %}
+                        <form action="/admin/unlock/{{ u._id }}" method="POST">
+                            <input type="hidden" name="role" value="{{ currentRole }}">
+                            <button type="submit"
+                                class="bg-red-600 text-white px-5 py-2.5 rounded-lg font-medium shadow-md shadow-red-200 hover:bg-red-700 hover:-translate-y-0.5 transition-all duration-200 flex items-center text-sm">
+                                <i class="fas fa-unlock mr-2"></i> Unlock
+                            </button>
+                        </form>
                         {% else %}
                         <span
-                            class="text-xs font-bold uppercase {{ 'text-emerald-600' if user.status == 'active' else 'text-amber-600' }}">{{
-                            user.status }}</span>
+                            class="bg-slate-200 text-slate-500 text-xs font-bold px-3 py-2 rounded-lg border border-slate-300 flex items-center">
+                            <i class="fas fa-lock mr-2"></i> Admin Clearance Required
+                        </span>
                         {% endif %}
-                        <p class="font-bold text-slate-700">₹{{ user.balance }}</p>
-                    </div>
 
-                    {% if user.status == 'locked' and currentRole == 'admin' %}
-                    <form action="/admin/unlock/{{ user._id }}" method="POST" class="mt-3">
-                        <button type="submit"
-                            class="w-full bg-slate-800 text-white text-xs font-bold py-2 rounded hover:bg-emerald-600 transition shadow">
-                            Resolve Flag & Unlock Account
-                        </button>
-                    </form>
-                    {% elif user.status == 'locked' %}
-                    <div
-                        class="mt-3 text-center text-xs text-slate-500 font-bold bg-slate-100 py-2 rounded border border-slate-200 shadow-inner">
-                        🔒 Awaiting Admin Unlock
                     </div>
                     {% endif %}
+                    {% endfor %}
 
+                    {% if not hasLockedUsers %}
+                    <div class="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        <i
+                            class="fas fa-shield-check text-emerald-400 text-5xl mb-4 shadow-emerald-100 drop-shadow-lg"></i>
+                        <p class="text-slate-600 font-medium text-lg">System Secure</p>
+                        <p class="text-slate-400 text-sm mt-1">No anomalous behavior detected across network.</p>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endfor %}
+            </div>
+
+            <div
+                class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 transition hover:shadow-xl duration-300">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-5 mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center">
+                        <i class="fas fa-chart-line text-indigo-500 mr-3 text-2xl"></i> Fraud Matrix (>₹50,000)
+                    </h2>
+                </div>
+                <div class="mt-4 relative h-80 w-full">
+                    <canvas id="fraudChart"></canvas>
+                </div>
             </div>
         </div>
-
     </div>
 
+    <input type="hidden" id="safeChartLabels" value="{{ chartLabels }}">
+    <input type="hidden" id="safeChartData" value="{{ chartData }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const labels = JSON.parse('{{ chartLabels | safe }}');
-        const data = JSON.parse('{{ chartData | safe }}');
+        const rawLabels = document.getElementById('safeChartLabels').value;
+        const rawData = document.getElementById('safeChartData').value;
+
+        let labels = [];
+        let data = [];
+        try {
+            labels = JSON.parse(rawLabels);
+            data = JSON.parse(rawData);
+        } catch (err) {
+            console.error("No data available yet.", err);
+        }
 
         const ctx = document.getElementById('fraudChart').getContext('2d');
 
-        if (flaggedData.length > 0) {
+        if (data.length > 0) {
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: flaggedLabels,
+                    labels: labels,
                     datasets: [{
-                        label: 'Flagged Amount (INR)',
-                        data: flaggedData,
-                        backgroundColor: 'rgba(220, 38, 38, 0.8)',
-                        borderColor: 'rgba(153, 27, 27, 1)',
+                        label: 'Anomalous Transfer Amount (₹)',
+                        data: data,
+                        backgroundColor: 'rgba(239, 68, 68, 0.85)', // Darker Red
+                        borderColor: 'rgb(185, 28, 28)',
                         borderWidth: 1,
-                        borderRadius: 4
+                        borderRadius: 6,
+                        hoverBackgroundColor: 'rgba(220, 38, 38, 1)'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
-                        x: { grid: { display: false } }
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Inter', weight: 'bold' } } }
                     },
-                    plugins: { legend: { display: false } }
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        x: { grid: { display: false } }
+                    }
                 }
             });
         } else {
-            document.getElementById('fraudChart').style.display = 'none';
-            ctx.canvas.parentNode.innerHTML += '<div class="flex h-full items-center justify-center text-slate-400 italic">Not enough anomaly data to generate chart.</div>';
+            document.getElementById('fraudChart').outerHTML = "<div class='flex flex-col items-center justify-center h-full text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200'><i class='fas fa-chart-network text-5xl mb-4 opacity-50'></i><p class='font-medium'>Awaiting telemetrics...</p><p class='text-xs mt-2'>High-value transfers will map here automatically.</p></div>";
         }
     </script>
 </body>

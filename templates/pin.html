@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Security Verification | SecureChain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .pin-input {
+            letter-spacing: 0.5em;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-10 rounded-2xl shadow-xl max-w-sm w-full border-t-4 border-cyan-500">
+
+        <div class="text-center mb-8">
+            <i class="fas fa-lock text-cyan-500 text-4xl mb-3"></i>
+            <h2 class="text-2xl font-extrabold text-slate-800">Account Security</h2>
+            <p class="text-sm text-slate-500 mt-1">{{ user.email }}</p>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-50 text-red-600 text-sm font-bold p-3 rounded-lg text-center mb-6 border border-red-200">
+            <i class="fas fa-exclamation-circle mr-1"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if action == 'setup' %}
+        <p class="text-sm text-slate-600 mb-6 text-center">Welcome! Before accessing your dashboard, please create a
+            4-digit secret PIN for future logins.</p>
+        <form action="/pin/setup/{{ user._id }}" method="POST" class="space-y-4">
+            <input type="password" name="pin" maxlength="4" pattern="\d{4}" placeholder="••••" required
+                class="pin-input w-full p-4 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
+            <button type="submit"
+                class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-cyan-600 transition shadow-lg">Set
+                Security PIN</button>
+        </form>
+
+        {% elif action == 'verify' %}
+        <p class="text-sm text-slate-600 mb-6 text-center">Please enter your 4-digit secret PIN to securely access your
+            dashboard.</p>
+        <form action="/pin/verify/{{ user._id }}" method="POST" class="space-y-4">
+            <input type="password" name="pin" maxlength="4" pattern="\d{4}" placeholder="••••" required
+                class="pin-input w-full p-4 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
+            <button type="submit"
+                class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-cyan-600 transition shadow-lg">Unlock
+                Dashboard</button>
+        </form>
+        <div class="text-center mt-4">
+            <a href="/pin/forgot/{{ user._id }}" class="text-xs font-bold text-cyan-600 hover:underline">Forgot your
+                PIN?</a>
+        </div>
+
+        {% elif action == 'forgot' %}
+        <p class="text-sm text-slate-600 mb-6 text-center">Verify your identity using your login password to create a
+            new PIN.</p>
+        <form action="/pin/forgot/{{ user._id }}" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Account Password</label>
+                <input type="password" name="password" required
+                    class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">New 4-Digit PIN</label>
+                <input type="password" name="new_pin" maxlength="4" pattern="\d{4}" placeholder="••••" required
+                    class="pin-input w-full p-4 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
+            </div>
+            <button type="submit"
+                class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-cyan-600 transition shadow-lg">Reset
+                PIN & Login</button>
+        </form>
+        <div class="text-center mt-4">
+            <a href="/pin/verify/{{ user._id }}" class="text-xs font-bold text-slate-500 hover:text-slate-800">Cancel &
+                Go Back</a>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

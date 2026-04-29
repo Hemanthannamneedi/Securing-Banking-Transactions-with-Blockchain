@@ -1,188 +1,304 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layout.html" %}
+{% block page_title %}Admin Portal{% endblock %}
+{% block brand_name %}Admin Portal{% endblock %}
+{% block role %}Superuser Access{% endblock %}
+{% block header %}System Administration{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        let currentFormToSubmit = null;
-        function openModal(formId) {
-            currentFormToSubmit = document.getElementById(formId);
-            document.getElementById('confirmationModal').classList.remove('hidden');
-        }
-        function closeModal() {
-            currentFormToSubmit = null;
-            document.getElementById('confirmationModal').classList.add('hidden');
-        }
-        function confirmAction() {
-            if (currentFormToSubmit) { currentFormToSubmit.submit(); }
-        }
-        function toggleSection(sectionId) {
-            document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(sectionId).classList.remove('hidden');
-        }
-    </script>
-</head>
+{% block sidebar %}
+<a onclick="switchTab(event, 'tab-requests', 'Account Requests')" class="nav-link active"><i
+        class="fas fa-users w-6 mr-3"></i> Account Requests</a>
+<a onclick="switchTab(event, 'tab-transfers', 'Process Transfers')" class="nav-link"><i
+        class="fas fa-exchange-alt w-6 mr-3"></i> Process Transfers</a>
+<a onclick="switchTab(event, 'tab-deposits', 'Deposit Funds')" class="nav-link"><i
+        class="fas fa-piggy-bank w-6 mr-3"></i> Process Deposits</a>
+<a onclick="switchTab(event, 'tab-ledger', 'System Ledger')" class="nav-link"><i
+        class="fas fa-file-invoice w-6 mr-3"></i> System Ledger</a>
+<a onclick="switchTab(event, 'tab-analytics', 'Central Analytics')"
+    class="nav-link text-cyan-400 mt-4 border-t border-slate-800 pt-4"><i class="fas fa-chart-pie w-6 mr-3"></i> Central
+    Analytics</a>
+<a onclick="switchTab(event, 'tab-directory', 'User Directory')"
+    class="nav-link text-emerald-400 hover:text-emerald-300"><i class="fas fa-address-book w-6 mr-3"></i> User
+    Directory</a>
+<a onclick="switchTab(event, 'tab-profile', 'My Profile')"
+    class="nav-link mt-4 border-t border-slate-800 pt-4 text-blue-400 hover:text-blue-300"><i
+        class="fas fa-user-circle w-6 mr-3"></i> My Profile</a>
+{% endblock %}
 
-<body class="bg-slate-50 flex h-screen overflow-hidden">
+{% block content %}
+<div class="max-w-6xl">
 
-    <div id="confirmationModal"
-        class="hidden fixed inset-0 bg-slate-900 bg-opacity-80 flex items-center justify-center z-50 transition-opacity">
-        <div
-            class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full border-t-4 border-cyan-500 transform transition-all scale-105">
-            <h3 class="text-xl font-bold text-slate-900 mb-2">Confirm Admin Action</h3>
-            <p class="text-slate-600 mb-6">Are you sure you want to authorize this request and permanently update the
-                secure ledger?</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal()"
-                    class="px-4 py-2 bg-slate-200 text-slate-800 rounded hover:bg-slate-300 transition">Cancel</button>
-                <button onclick="confirmAction()"
-                    class="px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition shadow">Yes,
-                    Authorize</button>
+    <div id="tab-profile" class="tab-content card border-t-blue-500">
+        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6"><i
+                class="fas fa-user-shield text-blue-500 mr-2"></i> Staff Profile Details</h3>
+        <form action="/staff/edit/{{ user._id }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="text-xs font-bold text-slate-500 uppercase">First Name</label><input type="text"
+                    name="first_name" value="{{ user.first_name }}"
+                    class="w-full p-3 border rounded-lg bg-slate-50 mt-1"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Last Name</label><input type="text"
+                    name="last_name" value="{{ user.last_name }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1">
             </div>
-        </div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Mobile Number</label><input type="text"
+                    name="mobile" value="{{ user.mobile }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Registered Address</label><input type="text"
+                    name="address" value="{{ user.address }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1">
+            </div>
+            <div class="md:col-span-2 mt-4"><button type="submit"
+                    class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-700 transition shadow">Save
+                    Profile Edits</button></div>
+        </form>
     </div>
 
-    <div class="w-64 bg-slate-950 text-white flex flex-col shadow-2xl z-20 border-r border-slate-800">
-        <div class="p-6 bg-slate-900 text-center border-b border-slate-800">
-            <h2 class="text-2xl font-bold tracking-wider text-cyan-400">Admin Portal</h2>
-            <p class="text-slate-400 text-sm mt-1">Superuser Access</p>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <button onclick="toggleSection('requests')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition text-slate-300 hover:text-cyan-300 font-medium border border-transparent hover:border-cyan-800">👥
-                Account Requests</button>
-            <button onclick="toggleSection('transfers')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition text-slate-300 hover:text-cyan-300 font-medium border border-transparent hover:border-cyan-800">💸
-                Process Transfers</button>
-            <button onclick="toggleSection('deposits')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition text-slate-300 hover:text-cyan-300 font-medium border border-transparent hover:border-cyan-800">💵
-                Process Deposits</button>
-            <a href="/behavior?role=admin"
-                class="block w-full text-left px-4 py-3 rounded-lg hover:bg-red-900/80 bg-slate-900 transition text-red-400 font-medium mt-6 border border-slate-800 hover:border-red-800">
-                ⚠️ Fraud Analysis</a>
-        </nav>
-        <div class="p-4 border-t border-slate-800">
-            <a href="/"
-                class="block w-full text-center px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition font-bold shadow text-slate-300">Logout</a>
-        </div>
-    </div>
-
-    <div class="flex-1 overflow-y-auto relative bg-slate-100">
-        <div class="h-40 w-full bg-cover bg-center shadow-inner"
-            style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80');">
-            <div class="w-full h-full bg-slate-900/80 flex items-center px-10">
-                <h2 class="text-3xl text-white font-bold drop-shadow-md">System Administration</h2>
+    <div id="tab-requests" class="tab-content active space-y-6">
+        <div class="card">
+            <h3 class="text-lg font-bold text-slate-800 mb-6">Pending Registrations</h3>
+            <div class="space-y-3">
+                {% for u in pending_users %}
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-slate-800">{{ u.email }}</p>
+                        <p class="text-xs text-slate-500">Registered Bank: <span class="text-cyan-600 font-bold">{{
+                                u.bank }}</span> | Loc: {{ u.city }}, {{ u.state }}</p>
+                    </div>
+                    <form action="/admin/approve/{{ u._id }}" method="POST"><button
+                            class="bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-cyan-700 transition">Approve</button>
+                    </form>
+                </div>
+                {% else %}<p class="text-sm text-slate-400 italic">No pending registrations.</p>{% endfor %}
             </div>
         </div>
 
-        <div class="p-10 max-w-5xl mx-auto">
+        <div class="card border-t-amber-500">
+            <h3 class="text-lg font-bold text-amber-600 mb-6">Locked Accounts</h3>
+            <div class="space-y-4">
+                {% for u in blocked_users %}
+                <div class="p-4 bg-amber-50 border border-amber-100 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-slate-800">{{ u.email }}</p>
+                        <p class="text-xs text-slate-500">Acc: {{ u.account_number }}</p>
+                    </div>
+                    <form action="/admin/unlock/{{ u._id }}" method="POST"><button
+                            class="bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-amber-700 transition">Unblock</button>
+                    </form>
+                </div>
+                {% else %}<p class="text-sm text-slate-400 italic">No locked accounts.</p>{% endfor %}
+            </div>
+        </div>
 
-            <div id="requests" class="dashboard-section bg-white p-8 rounded-xl shadow-xl border-t-4 border-cyan-600">
-                <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-2">Pending Account
-                    Registrations</h3>
-                <div class="space-y-4">
-                    {% if pending_users.length > 0 %}
-                    {% for user in pending_users %}
-                    <div
-                        class="flex justify-between items-center p-5 bg-slate-50 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
-                        <div>
-                            <p class="text-lg font-bold text-slate-900">{{ user.email }}</p>
-                            <p class="text-sm text-slate-600">Registered Bank: <span
-                                    class="font-semibold text-cyan-700">{{ user.bank }}</span></p>
-                        </div>
-                        <form id="form-user-{{ user._id }}" action="/admin/approve/{{ user._id }}" method="POST">
-                            <button type="button" onclick="openModal('form-user-{{ user._id }}')"
-                                class="bg-cyan-600 text-white px-5 py-2 rounded-lg hover:bg-cyan-700 transition font-bold shadow-md transform hover:scale-105">Approve
-                                & Assign A/C</button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card border-t-red-500">
+                <h3 class="font-bold text-red-600 mb-4">Closure Requests</h3>
+                {% for req in deletion_requests %}
+                <div class="bg-red-50 p-4 rounded-xl mb-2">
+                    <p class="font-bold text-sm">{{ req.email }}</p>
+                    <p class="text-xs italic mb-3 text-slate-600">"{{ req.deletion_request.reason }}"</p>
+                    <div class="flex gap-2">
+                        <form action="/admin/approve_deletion/{{ req._id }}" method="POST" class="flex-1"><button
+                                class="w-full bg-red-600 text-white py-1.5 rounded-lg text-xs font-bold hover:bg-red-700 transition">Agree</button>
+                        </form>
+                        <form action="/admin/deny_deletion/{{ req._id }}" method="POST" class="flex-1"><button
+                                class="w-full bg-white border border-slate-300 text-slate-700 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition">Disagree</button>
                         </form>
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="bg-slate-100 border-l-4 border-cyan-500 text-slate-700 p-6 rounded-r-lg" role="alert">
-                        <p class="italic">No pending registration requests.</p>
-                    </div>
-                    {% endif %}
                 </div>
+                {% else %}<p class="text-sm text-slate-400 italic">No closure requests.</p>{% endfor %}
             </div>
 
-            <div id="transfers"
-                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-xl border-t-4 border-cyan-600">
-                <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-2">Pending Blockchain
-                    Transfers</h3>
-                <div class="space-y-4">
-                    {% if pending_transfers.length > 0 %}
-                    {% for tx in pending_transfers %}
-                    <div
-                        class="p-5 bg-slate-50 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <p class="text-xl font-bold text-cyan-900">Transfer: ₹{{ tx.transaction_data.amount }}
-                                </p>
-                                <p class="text-sm text-slate-700 mt-1">From A/C: <span class="font-mono font-bold">{{
-                                        tx.transaction_data.sender_account }}</span></p>
-                                <p class="text-sm text-slate-700">To A/C: <span class="font-mono font-bold">{{
-                                        tx.transaction_data.recipient_account }}</span></p>
-                            </div>
-                            <form id="form-tx-{{ tx._id }}" action="/admin/approve_transfer/{{ tx._id }}" method="POST">
-                                <button type="button" onclick="openModal('form-tx-{{ tx._id }}')"
-                                    class="bg-cyan-600 text-white px-5 py-2 rounded-lg hover:bg-cyan-700 transition font-bold shadow-md transform hover:scale-105">Sign
-                                    & Approve Block</button>
-                            </form>
-                        </div>
-                        <div
-                            class="bg-slate-900 text-cyan-400 p-3 rounded font-mono text-xs overflow-x-auto shadow-inner">
-                            <p><strong>Hash:</strong> {{ tx.hash }}</p>
-                        </div>
+            <div class="card border-t-indigo-500">
+                <h3 class="font-bold text-indigo-600 mb-4">Branch Transfers</h3>
+                {% for req in branch_requests %}
+                <div class="bg-indigo-50 p-4 rounded-xl mb-2">
+                    <p class="font-bold text-sm">{{ req.email }}</p>
+                    <p class="text-xs mb-3 text-slate-600">Target City: <span class="font-bold">{{
+                            req.branch_request.to_branch }}</span><br>Pin: {{ req.branch_request.pincode }}</p>
+                    <div class="flex gap-2">
+                        <form action="/admin/approve_branch/{{ req._id }}" method="POST" class="flex-1"><button
+                                class="w-full bg-indigo-600 text-white py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-700 transition">Approve</button>
+                        </form>
+                        <form action="/admin/deny_branch/{{ req._id }}" method="POST" class="flex-1"><button
+                                class="w-full bg-white border border-slate-300 text-slate-700 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition">Deny</button>
+                        </form>
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="bg-slate-100 border-l-4 border-cyan-500 text-slate-700 p-6 rounded-r-lg" role="alert">
-                        <p class="italic">No pending transfers require verification.</p>
-                    </div>
-                    {% endif %}
                 </div>
+                {% else %}<p class="text-sm text-slate-400 italic">No branch transfer requests.</p>{% endfor %}
             </div>
-
-            <div id="deposits"
-                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-xl border-t-4 border-cyan-600">
-                <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-2">Pending Deposit
-                    Requests</h3>
-                <div class="space-y-4">
-                    {% if pending_deposits.length > 0 %}
-                    {% for tx in pending_deposits %}
-                    <div
-                        class="p-5 bg-slate-50 border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <p class="text-2xl font-black text-green-600">+ ₹{{ tx.transaction_data.amount }}</p>
-                                <p class="text-sm text-slate-600 mt-1">Deposited by A/C: <span
-                                        class="font-mono font-bold text-slate-800">{{ tx.transaction_data.account_number
-                                        }}</span></p>
-                            </div>
-                            <form id="form-dep-{{ tx._id }}" action="/admin/approve_deposit/{{ tx._id }}" method="POST">
-                                <button type="button" onclick="openModal('form-dep-{{ tx._id }}')"
-                                    class="bg-cyan-600 text-white px-5 py-2 rounded-lg hover:bg-cyan-700 transition font-bold shadow-md transform hover:scale-105">Authorize
-                                    Deposit</button>
-                            </form>
-                        </div>
-                        <div
-                            class="bg-slate-900 text-green-400 p-3 rounded font-mono text-xs overflow-x-auto shadow-inner">
-                            <p><strong>Hash Proof:</strong> {{ tx.hash }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="bg-slate-100 border-l-4 border-cyan-500 text-slate-700 p-6 rounded-r-lg" role="alert">
-                        <p class="italic">No pending deposit verifications.</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
         </div>
     </div>
-</body>
 
-</html>
+    <div id="tab-transfers" class="tab-content card">
+        <h3 class="text-lg font-bold text-slate-800 mb-6">Process Transfers</h3>
+        <div class="space-y-4">
+            {% for tx in pending_transfers %}
+            <div class="flex justify-between items-center p-5 bg-slate-50 rounded-xl border border-slate-100">
+                <div>
+                    <p class="font-bold text-slate-800">{{ tx.sender_email }} <span
+                            class="font-normal text-slate-500 text-sm">is transferring to</span> <span
+                            class="font-mono text-indigo-600">{{ tx.transaction_data.recipient_account }}</span></p>
+                    <p class="text-xs text-slate-400 mt-1"><i class="fas fa-clock mr-1"></i> {{ tx.timestamp.slice(0,
+                        16).replace('T', ' ') }}</p>
+                </div>
+                <div class="text-right flex flex-col items-end gap-2">
+                    <p class="font-extrabold text-slate-800 text-xl">₹{{ tx.transaction_data.amount }}</p>
+                    <div class="flex gap-2">
+                        <form action="/admin/approve_transfer/{{ tx._id }}" method="POST"><button
+                                class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-700 transition">Approve</button>
+                        </form>
+                        <form action="/admin/reject_transfer/{{ tx._id }}" method="POST"><button
+                                class="bg-red-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 transition">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}<p class="text-sm text-slate-400 italic">No pending transfers.</p>{% endfor %}
+        </div>
+    </div>
+
+    <div id="tab-deposits" class="tab-content card border-t-emerald-500">
+        <h3 class="text-lg font-bold text-slate-800 mb-6">Process Deposits</h3>
+        <div class="space-y-4">
+            {% for tx in pending_deposits %}
+            <div class="flex justify-between items-center p-5 bg-slate-50 rounded-xl border border-slate-100">
+                <div>
+                    <p class="font-bold text-slate-800">{{ tx.sender_email }} <span
+                            class="font-normal text-slate-500 text-sm">requested a cash deposit</span></p>
+                    <p class="text-xs text-slate-400 mt-1"><i class="fas fa-clock mr-1"></i> {{ tx.timestamp.slice(0,
+                        16).replace('T', ' ') }}</p>
+                </div>
+                <div class="text-right flex flex-col items-end gap-2">
+                    <p class="font-extrabold text-emerald-600 text-xl">₹{{ tx.transaction_data.amount }}</p>
+                    <div class="flex gap-2">
+                        <form action="/admin/approve_deposit/{{ tx._id }}" method="POST"><button
+                                class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition">Approve</button>
+                        </form>
+                        <form action="/admin/reject_deposit/{{ tx._id }}" method="POST"><button
+                                class="bg-red-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 transition">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}<p class="text-sm text-slate-400 italic">No pending deposits.</p>{% endfor %}
+        </div>
+    </div>
+
+    <div id="tab-ledger" class="tab-content card">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+            <h3 class="text-xl font-bold text-slate-800">System Processed Ledger</h3>
+            <form action="/admin/clear_history" method="POST"
+                onsubmit="return confirm('Clear ALL processed records?');">
+                <button type="submit"
+                    class="text-xs font-bold text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg transition border border-red-100"><i
+                        class="fas fa-trash-alt mr-1"></i> Clear Statement</button>
+            </form>
+        </div>
+        <div class="space-y-3">
+            {% for tx in history %}
+            <div
+                class="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-200 opacity-80">
+                <div>
+                    <p class="text-sm font-bold text-slate-700">{{ tx.sender_email }} <span
+                            class="font-normal uppercase text-[10px] ml-2 px-2 py-0.5 rounded bg-white border shadow-sm">{{
+                            tx.transaction_data.type }}</span></p>
+                    <p class="text-xs text-slate-400 font-mono mt-1">{{ tx.timestamp.slice(0, 16).replace('T', ' ') }}
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-bold text-slate-800">₹{{ tx.transaction_data.amount }}</p>
+                    <p
+                        class="text-[10px] font-bold uppercase mt-1 {% if tx.transaction_data.status == 'approved' %}text-emerald-500{% else %}text-red-500{% endif %}">
+                        {{ tx.transaction_data.status }}</p>
+                </div>
+            </div>
+            {% else %}<p class="text-sm text-slate-400 italic">Ledger is empty.</p>{% endfor %}
+        </div>
+    </div>
+
+    <div id="tab-analytics" class="tab-content">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="card border-t-red-500">
+                <h3 class="text-lg font-bold text-slate-800 mb-6"><i class="fas fa-radar text-red-500 mr-2"></i>
+                    Critical Fraud (> ₹50k)</h3>
+                <div class="relative h-64 w-full"><canvas id="fraudChart"></canvas></div>
+            </div>
+            <div class="card border-t-amber-500">
+                <h3 class="text-lg font-bold text-slate-800 mb-6"><i class="fas fa-chart-line text-amber-500 mr-2"></i>
+                    High Risk (₹20k - ₹50k)</h3>
+                <div class="relative h-64 w-full"><canvas id="riskChart"></canvas></div>
+            </div>
+        </div>
+        <div class="card border-t-indigo-500">
+            <h3 class="text-lg font-bold text-slate-800 mb-6"><i class="fas fa-network-wired text-indigo-500 mr-2"></i>
+                Global Transfer Velocity</h3>
+            <div class="relative h-64 w-full"><canvas id="behaviorChart"></canvas></div>
+        </div>
+    </div>
+
+    <div id="tab-directory" class="tab-content card border-t-emerald-500">
+        <h3 class="text-xl font-bold text-slate-800 mb-6"><i class="fas fa-id-card text-emerald-500 mr-2"></i> Global
+            User Directory</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for u in all_users %}
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+                <div class="flex justify-between items-start mb-4 border-b border-slate-200 pb-3">
+                    <div>
+                        <p class="font-black text-slate-800 text-lg">{{ u.email }}</p>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Bank: <span
+                                class="font-bold text-cyan-600">{{ u.bank }}</span> | Joined: {{ u.created_at.slice(0,
+                            10) if u.created_at else 'Legacy User' }}</p>
+                    </div>
+                    <span
+                        class="px-2 py-1 text-[9px] font-black rounded uppercase shadow-sm {% if u.status == 'active' %}bg-emerald-100 text-emerald-700 border border-emerald-200{% elif u.status == 'locked' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-amber-100 text-amber-700 border border-amber-200{% endif %}">{{
+                        u.status.replace('_', ' ') }}</span>
+                </div>
+                <div class="flex gap-4 mb-4">
+                    <div class="flex-1 text-center">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">ID Photo</p>
+                        {% if u.photo %}<img src="{{ u.photo }}"
+                            class="w-24 h-24 object-cover rounded-xl mx-auto border-2 border-white shadow-sm">{% else %}
+                        <div
+                            class="w-24 h-24 bg-slate-200 rounded-xl mx-auto flex items-center justify-center text-slate-400 border-2 border-white shadow-sm">
+                            <i class="fas fa-user-slash text-2xl"></i></div>{% endif %}
+                    </div>
+                    <div class="flex-1 text-center">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Biometric Scan
+                        </p>
+                        {% if u.fingerprint %}<img src="{{ u.fingerprint }}"
+                            class="w-24 h-24 object-cover rounded-xl mx-auto border-2 border-white shadow-sm bg-white p-1">{%
+                        else %}<div
+                            class="w-24 h-24 bg-slate-200 rounded-xl mx-auto flex items-center justify-center text-slate-400 border-2 border-white shadow-sm">
+                            <i class="fas fa-fingerprint text-2xl"></i></div>{% endif %}
+                    </div>
+                </div>
+                <div class="border-t border-slate-200 pt-4 text-center">
+                    <button onclick="document.getElementById('sig-{{ u._id }}').classList.toggle('hidden')"
+                        class="w-full text-xs font-bold bg-slate-800 text-white py-2.5 rounded-lg hover:bg-cyan-600 transition shadow-md"><i
+                            class="fas fa-file-signature mr-2"></i> Toggle Digital Signature</button>
+                    <div id="sig-{{ u._id }}"
+                        class="hidden mt-4 bg-white p-2 rounded-xl border border-slate-200 shadow-inner">{% if
+                        u.signature %}<img src="{{ u.signature }}" class="w-full h-16 object-contain">{% else %}<p
+                            class="text-xs text-red-500 italic py-2">No signature on file.</p>{% endif %}</div>
+                </div>
+            </div>
+            {% else %}<p class="text-slate-500 italic col-span-2">No registered users in the network.</p>{% endfor %}
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="fraudData" value="{{ chartData }}">
+<input type="hidden" id="fraudLabels" value="{{ chartLabels }}">
+<input type="hidden" id="riskData" value="{{ riskData }}">
+<input type="hidden" id="riskLabels" value="{{ riskLabels }}">
+<input type="hidden" id="behData" value="{{ behaviorData }}">
+<input type="hidden" id="behLabels" value="{{ behaviorLabels }}">
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const chartOptions = { responsive: true, maintainAspectRatio: false };
+        new Chart(document.getElementById('fraudChart').getContext('2d'), { type: 'bar', data: { labels: JSON.parse(document.getElementById('fraudLabels').value || '[]'), datasets: [{ label: 'Flagged Amount (₹)', data: JSON.parse(document.getElementById('fraudData').value || '[]'), backgroundColor: '#ef4444', borderRadius: 4 }] }, options: chartOptions });
+        new Chart(document.getElementById('riskChart').getContext('2d'), { type: 'bar', data: { labels: JSON.parse(document.getElementById('riskLabels').value || '[]'), datasets: [{ label: 'High Risk (₹)', data: JSON.parse(document.getElementById('riskData').value || '[]'), backgroundColor: '#f59e0b', borderRadius: 4 }] }, options: chartOptions });
+        new Chart(document.getElementById('behaviorChart').getContext('2d'), { type: 'line', data: { labels: JSON.parse(document.getElementById('behLabels').value || '[]'), datasets: [{ label: 'Transfer Velocity', data: JSON.parse(document.getElementById('behData').value || '[]'), borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.2)', fill: true, tension: 0.4 }] }, options: chartOptions });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => { setTimeout(() => { for (let id in Chart.instances) Chart.instances[id].resize(); }, 50); });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,219 +1,277 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layout.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>User Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        function toggleSection(sectionId) {
-            document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(sectionId).classList.remove('hidden');
-        }
-    </script>
-</head>
+{% block page_title %}{{ user.bank }} Portal{% endblock %}
+{% block brand_name %}{{ user.bank }}{% endblock %}
+{% block role %}{{ user.account_type }}{% endblock %}
+{% block header %}Profile & Dashboard{% endblock %}
 
-<body class="bg-gray-100 flex h-screen overflow-hidden">
+{% block header_right %}
+<div
+    class="text-right bg-white/10 px-6 py-3 rounded-xl backdrop-blur-sm border border-white/20 flex flex-col items-end min-w-[180px]">
+    <p class="text-[10px] font-bold text-cyan-200 uppercase tracking-widest mb-1">Available Balance</p>
 
-    <div class="w-64 bg-emerald-900 text-white flex flex-col shadow-2xl z-20">
-        <div class="p-6 bg-emerald-950 text-center border-b border-emerald-800">
-            <h2 class="text-2xl font-bold tracking-wider">{{ user.bank }}</h2>
-            <p class="text-emerald-300 text-sm mt-1">Personal Banking</p>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <button onclick="toggleSection('profile')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">👤 Profile &
-                Balance</button>
-            <button onclick="toggleSection('transfer')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">🔄 Secure
-                Transfer</button>
-            <button onclick="toggleSection('deposit')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">💵 Deposit
-                Funds</button>
-            <button onclick="toggleSection('statement')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-800 transition font-medium">📄 Mini
-                Statement</button>
-        </nav>
-        <div class="p-4 border-t border-emerald-800">
-            <a href="/"
-                class="block w-full text-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition font-bold shadow">Logout</a>
+    {% if show_balance %}
+    <p class="text-3xl font-black text-white">₹{{ user.balance }}</p>
+    {% else %}
+    <div class="flex items-center gap-4">
+        <p class="text-3xl font-black text-white">₹••••</p>
+        <button onclick="document.getElementById('pinModal').classList.remove('hidden')"
+            class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow transition">
+            View
+        </button>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<a onclick="switchTab(event, 'tab-profile', 'Profile & Balance')" class="nav-link active"><i
+        class="fas fa-id-badge w-6 mr-3"></i> Profile & Balance</a>
+<a onclick="switchTab(event, 'tab-transfer', 'Secure Transfer')" class="nav-link"><i
+        class="fas fa-paper-plane w-6 mr-3"></i> Secure Transfer</a>
+<a onclick="switchTab(event, 'tab-deposit', 'Deposit Funds')" class="nav-link"><i
+        class="fas fa-piggy-bank w-6 mr-3"></i> Deposit Funds</a>
+<a onclick="switchTab(event, 'tab-statement', 'Mini Statement')" class="nav-link"><i
+        class="fas fa-file-invoice-dollar w-6 mr-3"></i> Mini Statement</a>
+<a onclick="switchTab(event, 'tab-settings', 'Account Settings')"
+    class="nav-link mt-8 border-t border-slate-800 pt-6"><i class="fas fa-cog w-6 mr-3"></i> Account Settings</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl relative">
+
+    {% if user.status == 'locked' %}
+    <div class="bg-red-500 text-white p-6 rounded-xl shadow-xl mb-8 flex items-center">
+        <i class="fas fa-exclamation-triangle text-4xl mr-6"></i>
+        <div>
+            <h3 class="text-xl font-black">SECURITY ALERT: ACCOUNT LOCKED</h3>
+            <p class="text-sm font-medium mt-1">You exceeded the transaction limits. Your account is frozen pending
+                Admin review.</p>
         </div>
     </div>
+    {% endif %}
 
-    <div class="flex-1 overflow-y-auto relative">
-        <div class="h-48 w-full bg-cover bg-center shadow-inner"
-            style="background-image: url('https://images.unsplash.com/photo-1565514020179-026b92b84bb6?auto=format&fit=crop&w=1200&q=80');">
-            <div class="w-full h-full bg-emerald-900/60 flex items-center px-10">
-                <h2 class="text-4xl text-white font-bold drop-shadow-md">Welcome back, {{ user.first_name if
-                    user.first_name else 'User' }}</h2>
+    <div id="tab-profile" class="tab-content active card">
+        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6">User Profile Details</h3>
+        <form action="/user/edit/{{ user._id }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="text-xs font-bold text-slate-500 uppercase">First Name</label><input type="text"
+                    name="first_name" value="{{ user.first_name }}"
+                    class="w-full p-3 border rounded-lg bg-slate-50 mt-1"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Last Name</label><input type="text"
+                    name="last_name" value="{{ user.last_name }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1">
             </div>
-        </div>
-
-        {% if user.status == 'locked' %}
-        <div class="bg-red-600 text-white p-4 shadow-lg animate-pulse flex items-center justify-center space-x-3">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                </path>
-            </svg>
-            <div>
-                <h3 class="font-bold text-lg">SECURITY ALERT: ACCOUNT LOCKED</h3>
-                <p class="text-sm">We detected anomalous behavior on your account. All outgoing transfers have been
-                    frozen to protect your funds. Please contact your branch.</p>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Mobile Number</label><input type="text"
+                    name="mobile" value="{{ user.mobile }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Address</label><input type="text"
+                    name="address" value="{{ user.address }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1">
             </div>
+
+            <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-cyan-50 p-4 rounded-xl border border-cyan-100">
+                    <label class="text-[10px] font-black text-cyan-800 uppercase">Registered Bank</label>
+                    <p class="font-black text-cyan-900 mt-1 text-lg">{{ user.bank }}</p>
+                    <p class="font-mono text-sm mt-1 bg-white px-2 py-1 rounded shadow-sm">A/C: {{ user.account_number
+                        or 'PENDING' }}</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <label class="text-[10px] font-black text-slate-500 uppercase">Branch Details</label>
+                    <p class="font-bold text-slate-800 mt-1">{{ user.branch_name }}</p>
+                    <p class="text-xs text-slate-500 mt-1">Location: {{ user.city }}, {{ user.state }}</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <label class="text-[10px] font-black text-slate-500 uppercase">Account Status</label>
+                    <p class="font-mono font-bold text-lg text-slate-800 mt-1">IFSC: {{ user.ifsc_code }}</p>
+                    <p
+                        class="text-xs font-bold mt-2 uppercase {% if user.status == 'active' %}text-emerald-500{% else %}text-red-500{% endif %}">
+                        Status: {{ user.status }}</p>
+                </div>
+            </div>
+            <div class="md:col-span-2 mt-4"><button type="submit"
+                    class="bg-slate-800 text-white font-bold py-3 px-8 rounded-xl hover:bg-cyan-600 transition">Save
+                    Profile</button></div>
+        </form>
+    </div>
+
+    <div id="tab-transfer" class="tab-content card">
+        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6"><i
+                class="fas fa-lock text-cyan-600 mr-2"></i> Secure Transfer </h3>
+        <form action="/user/transfer/{{ user._id }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="block text-sm font-bold text-slate-600 mb-2">Recipient Account No.</label><input
+                    type="text" name="recipient_account" required class="w-full px-5 py-3 rounded-xl border bg-slate-50"
+                    {% if user.status=='locked' %}disabled{% endif %}></div>
+            <div><label class="block text-sm font-bold text-slate-600 mb-2">Amount (₹)</label><input type="number"
+                    name="amount" min="1" required class="w-full px-5 py-3 rounded-xl border bg-slate-50" {% if
+                    user.status=='locked' %}disabled{% endif %}></div>
+            <div class="md:col-span-2"><button type="submit"
+                    class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-cyan-600 transition" {% if
+                    user.status=='locked' %}disabled{% endif %}>Transfer Funds</button></div>
+        </form>
+    </div>
+
+    <div id="tab-deposit" class="tab-content card">
+        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6"><i
+                class="fas fa-plus-circle text-emerald-500 mr-2"></i> Deposit </h3>
+        <form action="/user/deposit/{{ user._id }}" method="POST" class="flex gap-4">
+            <input type="number" name="deposit_amount" min="1" required
+                class="flex-1 px-5 py-3 rounded-xl border bg-slate-50" {% if user.status=='locked' %}disabled{% endif
+                %}>
+            <button type="submit"
+                class="bg-emerald-600 text-white px-8 py-3 font-bold rounded-xl hover:bg-emerald-700 transition" {% if
+                user.status=='locked' %}disabled{% endif %}>Deposit</button>
+        </form>
+    </div>
+
+    <div id="tab-statement" class="tab-content card">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+            <h3 class="text-xl font-bold text-slate-800">Mini Statement</h3>
+            <form action="/user/clear_history/{{ user._id }}" method="POST"
+                onsubmit="return confirm('Clear your local statement view?');">
+                <button type="submit"
+                    class="text-xs font-bold text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg transition border border-red-100"><i
+                        class="fas fa-trash-alt mr-1"></i> Clear Statement</button>
+            </form>
         </div>
-        {% endif %}
-
-        <div class="p-10 max-w-4xl mx-auto">
-
-            <div id="profile" class="dashboard-section bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
-                <div class="flex justify-between items-start mb-6 border-b pb-4">
+        <div class="space-y-4">
+            {% for tx in transactions %}
+            <div class="p-5 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-800">Account Overview</h3>
-                        <p class="text-gray-500 text-sm font-mono mt-1">A/C: {{ user.account_number if
-                            user.account_number else 'Pending Generation' }}</p>
+                        <span
+                            class="text-[10px] font-black uppercase tracking-wider px-3 py-1 border border-slate-200 text-slate-600 rounded-full bg-white">{{
+                            tx.transaction_data.type }}</span>
+                        <p class="text-sm font-bold text-slate-800 mt-3">
+                            {% if tx.transaction_data.type == 'deposit' %} Cash Deposit
+                            {% elif tx.transaction_data.sender_account == user.account_number %} Transfer to: <span
+                                class="font-mono text-cyan-600">{{ tx.transaction_data.recipient_account }}</span>
+                            {% else %} Received from: <span class="font-mono text-emerald-600">{{
+                                tx.transaction_data.sender_account }}</span>{% endif %}
+                        </p>
+                        <p class="text-[10px] text-slate-400 mt-1 font-mono"><i class="fas fa-clock mr-1"></i>{{
+                            tx.timestamp.slice(0, 16).replace('T', ' ') }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm text-gray-500 uppercase tracking-widest">Available Balance</p>
-                        <p class="text-4xl font-extrabold text-emerald-600">₹{{ user.balance }}</p>
+                        <p
+                            class="text-2xl font-extrabold {% if tx.transaction_data.status == 'rejected' %}text-red-500 line-through{% elif tx.transaction_data.type == 'deposit' or tx.transaction_data.recipient_account == user.account_number %}text-emerald-500{% else %}text-slate-800{% endif %}">
+                            {% if tx.transaction_data.type == 'deposit' or tx.transaction_data.recipient_account ==
+                            user.account_number %}+{% else %}-{% endif %}₹{{ tx.transaction_data.amount }}
+                        </p>
+                        <p
+                            class="text-[10px] font-bold uppercase mt-1 {% if tx.transaction_data.status == 'approved' %}text-emerald-500{% elif tx.transaction_data.status == 'rejected' %}text-red-500{% else %}text-amber-500{% endif %}">
+                            {{ tx.transaction_data.status.replace('_', ' ') }}</p>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-2 gap-4 text-gray-700 mb-6">
-                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    <p><strong>Mobile:</strong> {{ user.mobile }}</p>
-                    <p><strong>Address:</strong> {{ user.address }}</p>
-                    <p><strong>Status:</strong> <span
-                            class="{% if user.status == 'active' %}text-emerald-600{% elif user.status == 'locked' %}text-red-600{% else %}text-amber-500{% endif %} font-bold uppercase text-sm">{{
-                            user.status }}</span></p>
-                </div>
-
-                <form action="/user/edit/{{ user._id }}" method="POST"
-                    class="bg-gray-50 p-6 rounded-lg border border-gray-200 mt-4 space-y-4">
-                    <h4 class="font-bold text-gray-700 mb-2">Update Details</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="First Name"
-                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
-                        <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Last Name"
-                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
-                        <input type="text" name="mobile" value="{{ user.mobile }}" placeholder="Mobile Number"
-                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
-                        <input type="text" name="address" value="{{ user.address }}" placeholder="Address"
-                            class="px-3 py-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
-                    </div>
-                    <button type="submit"
-                        class="w-full bg-emerald-600 text-white font-bold py-2 rounded hover:bg-emerald-700 transition">Save
-                        Changes</button>
-                </form>
-            </div>
-
-            <div id="transfer"
-                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Transfer Funds via Blockchain</h3>
-                <p class="text-gray-500 mb-6">Transfers are cryptographically secured and verified by an Auditor.</p>
-
-                {% if user.status == 'active' %}
-                <form action="/user/transfer/{{ user._id }}" method="POST" class="space-y-4 max-w-lg">
-                    <input type="text" name="recipient_account" placeholder="Recipient Account Number" required
-                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50">
-                    <input type="number" name="amount" placeholder="Amount (INR)" required
-                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50">
-                    <button type="submit"
-                        class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 transition shadow-md">Initiate
-                        Secure Transfer</button>
-                </form>
-                {% elif user.status == 'locked' %}
-                <div class="bg-red-50 border-l-4 border-red-600 p-4 text-red-800 font-bold">Transfers disabled. Account
-                    is currently locked for security review.</div>
-                {% else %}
-                <div class="bg-amber-100 border-l-4 border-amber-500 p-4 text-amber-700 font-bold">Account pending admin
-                    approval. Transfers disabled.</div>
-                {% endif %}
-            </div>
-
-            <div id="deposit"
-                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Request Deposit</h3>
-                <p class="text-gray-500 mb-6">Deposit requests are processed and verified by Bank Agents.</p>
-
-                {% if user.status == 'active' %}
-                <form action="/user/deposit/{{ user._id }}" method="POST" class="space-y-4 max-w-lg">
-                    <input type="number" name="deposit_amount" placeholder="Deposit Amount (INR)" required
-                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50">
-                    <button type="submit"
-                        class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg hover:bg-emerald-700 transition shadow-md">Submit
-                        Deposit Request</button>
-                </form>
-                {% elif user.status == 'locked' %}
-                <div class="bg-red-50 border-l-4 border-red-600 p-4 text-red-800 font-bold">Deposits disabled. Account
-                    is currently locked for security review.</div>
-                {% else %}
-                <div class="bg-amber-100 border-l-4 border-amber-500 p-4 text-amber-700 font-bold">Account pending admin
-                    approval. Deposits disabled.</div>
-                {% endif %}
-            </div>
-
-            <div id="statement"
-                class="dashboard-section hidden bg-white p-8 rounded-xl shadow-lg border-t-4 border-emerald-600">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Blockchain Ledger Statement</h3>
-                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                    {% if transactions.length > 0 %}
-                    {% for tx in transactions %}
-                    <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
-                        <div class="flex justify-between items-center mb-2">
-                            <div>
-                                {% if tx.transaction_data.type == 'deposit' %}
-                                <p class="text-lg font-bold text-emerald-700">Deposit: +₹{{ tx.transaction_data.amount
-                                    }}</p>
-                                <p class="text-sm text-gray-600">Self Deposit</p>
-
-                                {% elif tx.transaction_data.type == 'transfer' %}
-                                {% if tx.transaction_data.sender_account == user.account_number %}
-                                <p class="text-lg font-bold text-red-600">Transfer Out: -₹{{ tx.transaction_data.amount
-                                    }}</p>
-                                <p class="text-sm text-gray-600">To A/C: <span class="font-mono">{{
-                                        tx.transaction_data.recipient_account }}</span></p>
-                                {% else %}
-                                <p class="text-lg font-bold text-emerald-700">Received Transfer: +₹{{
-                                    tx.transaction_data.amount }}</p>
-                                <p class="text-sm text-gray-600">From A/C: <span class="font-mono">{{
-                                        tx.transaction_data.sender_account }}</span></p>
-                                {% endif %}
-                                {% endif %}
-
-                                <p class="text-xs text-gray-500 mt-1">{{ tx.timestamp }}</p>
-                            </div>
-
-                            <div>
-                                {% if tx.transaction_data.status == 'approved' %}
-                                <span
-                                    class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300">Verified
-                                    & Settled</span>
-                                {% elif tx.transaction_data.status == 'flagged_fraud' %}
-                                <span
-                                    class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full border border-red-300">Flagged
-                                    & Frozen</span>
-                                {% else %}
-                                <span
-                                    class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">Pending
-                                    Verification</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="mt-3 bg-gray-900 text-emerald-400 p-2 rounded font-mono text-xs overflow-x-auto">
-                            <p><strong>Tx Hash:</strong> {{ tx.hash }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <p class="text-gray-500 italic">No transactions found for this account.</p>
-                    {% endif %}
+                <div class="mt-4 pt-3 border-t border-slate-200">
+                    <p class="text-[9px] text-slate-500 font-mono break-all"><span class="font-bold text-slate-600">Tx
+                            Hash:</span> {{ tx.hash }}</p>
                 </div>
             </div>
-
+            {% else %}
+            <p class="text-slate-400 italic py-10 text-center">No statements to display.</p>
+            {% endfor %}
         </div>
     </div>
-</body>
 
-</html>
+    <div id="tab-settings" class="tab-content">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card border-t-indigo-500">
+                <h3 class="font-bold text-slate-800 mb-4"><i class="fas fa-code-branch mr-2"></i> Transfer Branch</h3>
+                {% if user.branch_request %}
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <p class="text-sm text-indigo-700 font-bold mb-1">Request pending for: {{
+                        user.branch_request.to_branch }}</p>
+                    <p class="text-xs text-indigo-500 font-mono">Pincode mapped: {{ user.branch_request.pincode }}</p>
+                </div>
+                {% else %}
+                <form action="/user/request_branch/{{ user._id }}" method="POST">
+                    <label class="text-xs font-bold text-slate-500 uppercase">Target City</label>
+                    <input type="text" id="branchCity" name="to_branch_city" placeholder="e.g. Visakhapatnam" required
+                        class="w-full border p-3 rounded-xl bg-slate-50 mb-3 mt-1 text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                        list="cityList" oninput="autoFillPincode()">
+                    <datalist id="cityList">
+                        <option value="Visakhapatnam"></option>
+                        <option value="Vijayawada"></option>
+                        <option value="Hyderabad"></option>
+                        <option value="Bengaluru"></option>
+                    </datalist>
+
+                    <label class="text-xs font-bold text-slate-500 uppercase">Pincode</label>
+                    <input type="text" id="branchPincode" name="to_branch_pincode" placeholder="Auto-filled via City"
+                        required readonly
+                        class="w-full border p-3 rounded-xl bg-slate-200 text-slate-600 font-mono mb-4 mt-1 text-sm outline-none cursor-not-allowed">
+                    <button
+                        class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 shadow-md">Request
+                        Transfer</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <div class="card border-t-red-500">
+                <h3 class="font-bold text-red-600 mb-4"><i class="fas fa-user-times mr-2"></i> Close Account</h3>
+                {% if user.deletion_request %}
+                <p class="text-sm text-amber-600 font-bold bg-amber-50 p-3 rounded-lg border border-amber-100">Closure
+                    request sent to Admin.</p>
+                {% else %}
+                <form action="/user/request_deletion/{{ user._id }}" method="POST">
+                    <textarea name="reason" placeholder="Reason for leaving..." required
+                        class="w-full border p-3 rounded-xl bg-slate-50 mb-3 text-sm h-20 outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                    <button class="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700">Submit
+                        Closure Request</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pinModal"
+    class="{% if not pin_error and user.pin %}hidden{% endif %} fixed inset-0 bg-slate-900/70 z-[100] flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-2xl max-w-sm w-full shadow-2xl border-t-4 border-cyan-500">
+        <div class="text-center mb-6">
+            <i class="fas fa-lock text-cyan-500 text-3xl mb-2"></i>
+            <h3 class="text-xl font-bold text-slate-800">{% if not user.pin %}Set Secret PIN{% else %}Security Check{%
+                endif %}</h3>
+            <p class="text-xs text-slate-500 mt-1">{% if not user.pin %}Create a 4-digit PIN to view your balance.{%
+                else %}Enter your 4-digit PIN to view balance.{% endif %}</p>
+        </div>
+
+        {% if pin_error %}
+        <div class="bg-red-50 text-red-600 text-xs font-bold p-2 rounded text-center mb-4 border border-red-200">{{
+            pin_error }}</div>
+        {% endif %}
+
+        <form
+            action="{% if not user.pin %}/user/set_pin/{{ user._id }}{% else %}/user/verify_pin/{{ user._id }}{% endif %}"
+            method="POST" class="space-y-4">
+            <input type="password" name="pin" maxlength="4" pattern="\d{4}" placeholder="••••" required
+                class="w-full p-4 border border-slate-200 rounded-xl bg-slate-50 text-center tracking-[1em] text-2xl outline-none focus:ring-2 focus:ring-cyan-500">
+
+            <div class="flex gap-3">
+                {% if user.pin %}
+                <button type="button" onclick="document.getElementById('pinModal').classList.add('hidden')"
+                    class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200">Cancel</button>
+                {% endif %}
+                <button type="submit"
+                    class="flex-1 py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-cyan-600">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const pincodeDB = {
+        "visakhapatnam": "530001", "vijayawada": "520001", "hyderabad": "500001", "bengaluru": "560001"
+    };
+
+    function autoFillPincode() {
+        const city = document.getElementById('branchCity').value.toLowerCase().trim();
+        const pinInput = document.getElementById('branchPincode');
+        if (pincodeDB[city]) {
+            pinInput.value = pincodeDB[city]; pinInput.readOnly = true;
+            pinInput.classList.add('bg-slate-200', 'cursor-not-allowed', 'text-slate-600');
+        } else {
+            pinInput.value = ""; pinInput.placeholder = "Enter Pincode Manually"; pinInput.readOnly = false;
+            pinInput.classList.remove('bg-slate-200', 'cursor-not-allowed', 'text-slate-600');
+        }
+    }
+</script>
+{% endblock %}

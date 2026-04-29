@@ -1,197 +1,344 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureChain Banking - The Future of Safe Finance</title>
+    <title>SecureChain | Tokenless Blockchain Banking</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .slide {
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #020617;
+            /* Very dark slate/blue */
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Deep Blue Gradient Background */
+        .bg-blue-theme {
+            background: linear-gradient(180deg, #020617 0%, #0f172a 50%, #0c152a 100%);
+        }
+
+        /* Abstract Grid Overlay */
+        .bg-grid {
             position: absolute;
             inset: 0;
             z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
+            -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
         }
 
-        .slide.active {
+        /* Text Gradients */
+        .text-gradient-blue {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Continuous Floating Animation */
+        .animate-float {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+            animation: float 8s ease-in-out 4s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+        }
+
+        /* Nav Link Hover Effects */
+        .nav-link-top {
+            position: relative;
+        }
+
+        .nav-link-top::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #4838f8;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link-top:hover::after {
+            width: 100%;
+        }
+
+        /* SCROLL ANIMATIONS (Left & Right Slide-ins) */
+        .scroll-element {
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide-left {
+            transform: translateX(-100px);
+        }
+
+        .slide-right {
+            transform: translateX(100px);
+        }
+
+        .scroll-element.show {
             opacity: 1;
-            z-index: 10;
+            transform: translateX(0);
+        }
+
+        /* Glassmorphism Feature Cards */
+        .feature-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.6);
+            box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2);
         }
     </style>
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-blue-theme antialiased selection:bg-sky-500 selection:text-white">
 
-    <nav class="bg-blue-900 text-white p-4 shadow-xl sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                    </path>
-                </svg>
-                <h1 class="text-2xl font-bold tracking-wider">SecureChain</h1>
-            </div>
-            <div class="space-x-2 md:space-x-4">
-                <a href="/login?role=user"
-                    class="hover:bg-blue-800 px-4 py-2 rounded-full font-medium transition shadow">User Access</a>
-                <a href="/login?role=agent"
-                    class="hover:bg-blue-800 px-4 py-2 rounded-full font-medium transition shadow">Agent</a>
-                <a href="/login?role=auditor"
-                    class="hover:bg-blue-800 px-4 py-2 rounded-full font-medium transition shadow">Auditor</a>
-                <a href="/login?role=admin"
-                    class="hover:bg-blue-800 px-4 py-2 rounded-full font-medium transition shadow">Admin</a>
-            </div>
-        </div>
-    </nav>
+    <div class="bg-grid"></div>
 
-    <div class="relative w-full h-[600px] bg-gray-900 overflow-hidden">
-        <div class="slide active w-full h-full bg-cover bg-center"
-            style="background-image: url('https://images.unsplash.com/photo-1639762681485-074b7f4ec651?auto=format&fit=crop&w=1920&q=80');">
-        </div>
-        <div class="slide w-full h-full bg-cover bg-center"
-            style="background-image: url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1920&q=80');">
+    <div
+        class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-900/40 blur-[120px] pointer-events-none z-0">
+    </div>
+    <div
+        class="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-sky-900/20 blur-[100px] pointer-events-none z-0">
+    </div>
+
+    <nav
+        class="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center z-50 relative gap-6 md:gap-0">
+        <div class="flex items-center gap-4 group cursor-default">
+            <div
+                class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(56,189,248,0.4)]">
+                <i class="fas fa-link text-white text-2xl transform -rotate-45"></i>
+            </div>
+            <span class="text-2xl font-black tracking-widest text-white">SECURE<span
+                    class="text-sky-400">CHAIN</span></span>
         </div>
 
         <div
-            class="absolute inset-0 bg-gradient-to-r from-blue-900 via-blue-900/80 to-transparent z-20 flex items-center">
-            <div class="container mx-auto px-6 md:px-12">
-                <div class="max-w-2xl text-white space-y-6">
-                    <span
-                        class="bg-blue-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Next-Gen
-                        Banking</span>
-                    <h2 class="text-5xl md:text-6xl font-extrabold leading-tight">Unbreakable Security. <br>Absolute
-                        Trust.</h2>
-                    <p class="text-lg text-blue-100 leading-relaxed">Experience the future of finance where every
-                        transaction is cryptographically secured, immutable, and verified by our advanced blockchain
-                        ledger system.</p>
-                    <div class="pt-4">
-                        <a href="/login?role=user"
-                            class="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition shadow-lg inline-block">Open
-                            an Account Today</a>
-                    </div>
-                </div>
-            </div>
+            class="flex flex-wrap justify-center items-center gap-6 md:gap-8 bg-slate-900/50 md:bg-transparent px-6 py-3 rounded-2xl md:p-0 md:rounded-none border border-slate-800 md:border-none backdrop-blur-md md:backdrop-blur-none">
+            <a href="/login?role=user"
+                class="nav-link-top text-sm font-bold text-slate-300 hover:text-sky-400 transition-colors flex items-center">
+                <i class="fas fa-wallet mr-2 text-sky-500/70"></i> Personal
+            </a>
+            <a href="/login?role=agent"
+                class="nav-link-top text-sm font-bold text-slate-300 hover:text-emerald-400 transition-colors flex items-center">
+                <i class="fas fa-coins mr-2 text-emerald-500/70"></i> Agent
+            </a>
+            <a href="/login?role=auditor"
+                class="nav-link-top text-sm font-bold text-slate-300 hover:text-purple-400 transition-colors flex items-center">
+                <i class="fas fa-microscope mr-2 text-purple-500/70"></i> Auditor
+            </a>
+            <div class="w-px h-5 bg-slate-700 mx-1 hidden md:block"></div>
+            <a href="/login?role=admin"
+                class="px-5 py-2.5 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-400 text-sm font-bold hover:bg-sky-500 hover:text-slate-950 transition-all duration-300 shadow-[0_0_15px_rgba(56,189,248,0.15)] flex items-center">
+                <i class="fas fa-server mr-2"></i> Admin Login
+            </a>
         </div>
-    </div>
+    </nav>
 
-    <section class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h3 class="text-3xl font-bold text-blue-900 mb-4">Why Blockchain is the Safest Way to Bank</h3>
-                <p class="text-gray-600 text-lg">Traditional databases rely on central servers that can be compromised.
-                    SecureChain uses a decentralized hashing architecture, ensuring your money and data are
-                    mathematically protected.</p>
+    <main
+        class="container mx-auto px-6 flex flex-col lg:flex-row items-center justify-center gap-12 relative z-10 pt-16 pb-32 min-h-[80vh]">
+
+        <div class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold mb-8 backdrop-blur-sm uppercase tracking-widest">
+                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span> A Tokenless Approach
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <div
-                    class="bg-gray-50 rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1">
-                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                            </path>
-                        </svg>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-[1.1] tracking-tight">
+                Secure Banking <br>
+                Powered by <span class="text-gradient-blue">Blockchain.</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-400 max-w-lg mb-10 font-medium leading-relaxed">
+                Experience military-grade encryption, real-time cryptographic fraud detection, and immutable
+                ledgers—using standard Fiat currency. No tokens. No gas fees. Just ultimate security.
+            </p>
+
+            <a href="/login?role=user"
+                class="px-8 py-4 rounded-xl bg-sky-500 text-slate-950 font-black text-lg hover:bg-sky-400 shadow-[0_0_30px_rgba(56,189,248,0.3)] transition-all duration-300 transform hover:-translate-y-1 flex items-center">
+                Access Digital Wallet <i class="fas fa-arrow-right ml-3"></i>
+            </a>
+        </div>
+
+        <div class="w-full lg:w-1/2 relative flex justify-center animate-float hidden md:flex">
+            <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                alt="Blue Blockchain Visual"
+                class="w-full max-w-[480px] rounded-3xl border border-sky-500/20 object-cover"
+                style="box-shadow: 0 20px 80px rgba(14, 165, 233, 0.2);" />
+        </div>
+    </main>
+
+    <section class="relative z-10 py-24 bg-slate-900/50 border-t border-slate-800 backdrop-blur-sm overflow-hidden">
+
+        <div class="text-center mb-20 relative z-20">
+            <h2 class="text-4xl font-black text-white">Why a Tokenless Blockchain?</h2>
+            <p class="text-sky-400 mt-3 font-medium tracking-wide">The advantages of our hybrid enterprise architecture.
+            </p>
+        </div>
+
+        <div class="container mx-auto px-6 relative max-w-5xl">
+
+            <img src="https://images.unsplash.com/photo-1618044733300-9472054094ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                class="absolute top-10 left-[-10%] w-96 opacity-[0.07] mix-blend-screen animate-float blur-sm z-0 pointer-events-none rounded-full"
+                alt="Abstract Data">
+
+            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                class="absolute bottom-10 right-[-10%] w-[500px] opacity-[0.05] mix-blend-screen animate-float-delayed blur-sm z-0 pointer-events-none rounded-full"
+                alt="Server Tech">
+
+            <div class="space-y-8 relative z-10">
+
+                <div class="scroll-element slide-left flex justify-start">
+                    <div class="feature-card p-6 rounded-2xl w-full md:w-2/3 flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 shrink-0 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Immutable Ledger</h3>
+                            <p class="text-sm text-slate-400">Once a transaction is processed and hashed, it is
+                                permanently etched into the block. It cannot be secretly altered, deleted, or
+                                manipulated by any single party.</p>
+                        </div>
                     </div>
-                    <h4 class="text-xl font-bold mb-3">SHA-256 Encryption</h4>
-                    <p class="text-gray-600">Every deposit and transfer is processed using SHA-256 military-grade
-                        hashing. This creates a unique digital fingerprint for every transaction that cannot be
-                        reverse-engineered.</p>
                 </div>
 
-                <div
-                    class="bg-gray-50 rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1">
-                    <div class="w-14 h-14 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                            </path>
-                        </svg>
+                <div class="scroll-element slide-right flex justify-end">
+                    <div class="feature-card p-6 rounded-2xl w-full md:w-2/3 flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 shrink-0 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">SHA-256 Cryptography</h3>
+                            <p class="text-sm text-slate-400">Every transaction uses advanced cryptographic hashing.
+                                Each block relies on the `previous_hash`, ensuring complete mathematical integrity
+                                across the entire network.</p>
+                        </div>
                     </div>
-                    <h4 class="text-xl font-bold mb-3">Immutable Ledger</h4>
-                    <p class="text-gray-600">Once a block is added to our chain, it references the hash of the previous
-                        block. Modifying a single past transaction would require altering the entire chain, making fraud
-                        mathematically impossible.</p>
                 </div>
 
-                <div
-                    class="bg-gray-50 rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1">
-                    <div
-                        class="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                            </path>
-                        </svg>
+                <div class="scroll-element slide-left flex justify-start">
+                    <div class="feature-card p-6 rounded-2xl w-full md:w-2/3 flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 shrink-0 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Zero Crypto Volatility</h3>
+                            <p class="text-sm text-slate-400">This is a Tokenless Enterprise architecture. We use
+                                blockchain purely as a backend security layer to process standard Fiat (INR) balances,
+                                completely eliminating crypto market risks.</p>
+                        </div>
                     </div>
-                    <h4 class="text-xl font-bold mb-3">Multi-Tier Auditing</h4>
-                    <p class="text-gray-600">The system isolates responsibilities. Users initiate, Agents verify
-                        deposits, Auditors mathematically prove transfers, and AI models analyze behavioral anomalies to
-                        stop bad actors instantly.</p>
                 </div>
+
+                <div class="scroll-element slide-right flex justify-end">
+                    <div class="feature-card p-6 rounded-2xl w-full md:w-2/3 flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 shrink-0 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-radar"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Real-Time Fraud Locking</h3>
+                            <p class="text-sm text-slate-400">Automated systemic limits actively monitor transfer and
+                                deposit velocity. Any high-value transaction over ₹50k triggers an instant account
+                                freeze pending manual Audit.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scroll-element slide-left flex justify-start">
+                    <div class="feature-card p-6 rounded-2xl w-full md:w-2/3 flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 shrink-0 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Strict RBAC Architecture</h3>
+                            <p class="text-sm text-slate-400">Absolute separation of power. Users initiate, Agents
+                                verify cash, Auditors verify ledgers, and Admins control global access. No single role
+                                can compromise the chain.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scroll-element slide-right flex justify-end">
+                    <div class="feature-card p-6 rounded-2xl w-full md:w-2/3 flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 shrink-0 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Transparent Verification</h3>
+                            <p class="text-sm text-slate-400">Total transparency for the end-user. Blockchain
+                                transaction hashes are printed directly onto user mini-statements, allowing for
+                                independent verification of every transfer.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <section class="py-20 bg-gray-100 border-t border-gray-200">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row items-center gap-12">
-                <div class="md:w-1/2">
-                    <img src="https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=800&q=80"
-                        alt="Blockchain Tech" class="rounded-2xl shadow-2xl">
-                </div>
-                <div class="md:w-1/2 space-y-6">
-                    <h3 class="text-3xl font-bold text-blue-900">How the SecureChain Process Works</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <span
-                                class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 shrink-0">1</span>
-                            <p class="text-gray-700"><strong>Request Initiation:</strong> You request a transfer or
-                                deposit. The data is packaged into a raw transaction object.</p>
-                        </li>
-                        <li class="flex items-start">
-                            <span
-                                class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 shrink-0">2</span>
-                            <p class="text-gray-700"><strong>Block Generation & Hashing:</strong> The transaction is
-                                timestamped, combined with the previous block's hash, and run through a SHA-256
-                                algorithm.</p>
-                        </li>
-                        <li class="flex items-start">
-                            <span
-                                class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 shrink-0">3</span>
-                            <p class="text-gray-700"><strong>Agent & Auditor Verification:</strong> Authorized personnel
-                                review the cryptographic signature rather than just raw database tables, ensuring data
-                                integrity.</p>
-                        </li>
-                        <li class="flex items-start">
-                            <span
-                                class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 shrink-0">4</span>
-                            <p class="text-gray-700"><strong>Settlement:</strong> Upon verification, the block is
-                                permanently recorded, and your account balance is securely updated.</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-gray-900 text-gray-400 py-8 text-center">
-        <p>&copy; 2026 SecureChain Banking Platform. Protected by Advanced Blockchain Algorithms.</p>
+    <footer
+        class="py-8 text-center text-slate-500 text-xs tracking-widest uppercase border-t border-slate-800 relative z-10 bg-[#020617]">
+        © 2026 SecureChain Platform. Tokenless Architecture.
     </footer>
 
     <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        setInterval(() => {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }, 5000); 
+        document.addEventListener("DOMContentLoaded", function () {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.2 // Trigger when 20% of the element is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                        observer.unobserve(entry.target); // Stop observing once it's shown
+                    }
+                });
+            }, observerOptions);
+
+            // Select all elements with the 'scroll-element' class
+            const elements = document.querySelectorAll('.scroll-element');
+            elements.forEach(el => observer.observe(el));
+        });
     </script>
 </body>
 

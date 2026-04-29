@@ -1,109 +1,210 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layout.html" %}
+{% block page_title %}Agent Portal{% endblock %}
+{% block brand_name %}Agent Portal{% endblock %}
+{% block role %}Operations Access{% endblock %}
+{% block header %}Agent Console{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Agent Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        let currentFormToSubmit = null;
-        function openModal(formId) {
-            currentFormToSubmit = document.getElementById(formId);
-            document.getElementById('confirmationModal').classList.remove('hidden');
-        }
-        function closeModal() {
-            currentFormToSubmit = null;
-            document.getElementById('confirmationModal').classList.add('hidden');
-        }
-        function confirmAction() {
-            if (currentFormToSubmit) { currentFormToSubmit.submit(); }
-        }
-    </script>
-</head>
+{% block sidebar %}
+<a onclick="switchTab(event, 'tab-deposits', 'Pending Deposits')" class="nav-link active"><i
+        class="fas fa-piggy-bank w-6 mr-3"></i> Pending Deposits</a>
+<a onclick="switchTab(event, 'tab-ledger', 'Deposit Ledger')" class="nav-link"><i
+        class="fas fa-file-invoice w-6 mr-3"></i> Deposit Ledger</a>
+<a onclick="switchTab(event, 'tab-risk', 'Risk Analysis')" class="nav-link"><i class="fas fa-chart-line w-6 mr-3"></i>
+    Risk Analysis</a>
+<a onclick="switchTab(event, 'tab-readonly', 'System Alerts')" class="nav-link mt-8 border-t border-slate-800 pt-6"><i
+        class="fas fa-eye w-6 mr-3"></i> System Alerts</a>
+<a onclick="switchTab(event, 'tab-directory', 'User Directory')"
+    class="nav-link text-emerald-400 hover:text-emerald-300"><i class="fas fa-address-book w-6 mr-3"></i> User
+    Directory</a>
+<a onclick="switchTab(event, 'tab-profile', 'My Profile')"
+    class="nav-link mt-4 border-t border-slate-800 pt-4 text-blue-400 hover:text-blue-300"><i
+        class="fas fa-user-circle w-6 mr-3"></i> My Profile</a>
+{% endblock %}
 
-<body class="bg-gray-100 flex h-screen overflow-hidden">
+{% block content %}
+<div class="max-w-5xl">
 
-    <div id="confirmationModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity">
-        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full transform transition-all scale-105">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Confirm Deposit Processing</h3>
-            <p class="text-gray-600 mb-6">Are you sure you want to verify this deposit? The funds will be permanently
-                added to the user's account balance.</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal()"
-                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Cancel</button>
-                <button onclick="confirmAction()"
-                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition shadow">Yes, Process
-                    Deposit</button>
+    <div id="tab-profile" class="tab-content card border-t-blue-500">
+        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6"><i
+                class="fas fa-user-shield text-blue-500 mr-2"></i> Staff Profile Details</h3>
+        <form action="/staff/edit/{{ user._id }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="text-xs font-bold text-slate-500 uppercase">First Name</label><input type="text"
+                    name="first_name" value="{{ user.first_name }}"
+                    class="w-full p-3 border rounded-lg bg-slate-50 mt-1"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Last Name</label><input type="text"
+                    name="last_name" value="{{ user.last_name }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1">
             </div>
-        </div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Mobile Number</label><input type="text"
+                    name="mobile" value="{{ user.mobile }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1"></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Registered Address</label><input type="text"
+                    name="address" value="{{ user.address }}" class="w-full p-3 border rounded-lg bg-slate-50 mt-1">
+            </div>
+            <div class="md:col-span-2 mt-4"><button type="submit"
+                    class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-700 transition shadow">Save
+                    Profile Edits</button></div>
+        </form>
     </div>
 
-    <div class="w-64 bg-amber-900 text-white flex flex-col shadow-2xl z-20">
-        <div class="p-6 bg-amber-950 text-center border-b border-amber-800">
-            <h2 class="text-2xl font-bold tracking-wider">Agent Portal</h2>
-            <p class="text-amber-300 text-sm mt-1">Deposit Processing</p>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <button class="w-full text-left px-4 py-3 rounded-lg bg-amber-800 text-white font-medium shadow">💵 Pending
-                Deposits</button>
-            <a href="/behavior?role=agent"
-                class="block w-full text-left px-4 py-3 rounded-lg hover:bg-amber-800 transition text-amber-100 hover:text-white font-medium mt-6 border border-amber-700">
-                ⚠️ Risk Analysis</a>
-        </nav>
-        <div class="p-4 border-t border-amber-800">
-            <a href="/"
-                class="block w-full text-center px-4 py-2 bg-gray-800 hover:bg-gray-900 rounded-lg transition font-bold shadow">Logout</a>
-        </div>
-    </div>
-
-    <div class="flex-1 overflow-y-auto relative bg-gray-50">
-        <div class="h-40 w-full bg-cover bg-center shadow-inner"
-            style="background-image: url('https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=1200&q=80');">
-            <div class="w-full h-full bg-amber-900/70 flex items-center px-10">
-                <h2 class="text-3xl text-white font-bold drop-shadow-md">Deposit Operations</h2>
-            </div>
-        </div>
-
-        <div class="p-10 max-w-5xl mx-auto">
-            <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-amber-600">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Verification Queue</h3>
-
-                <div class="space-y-5">
-                    {% if pending_deposits.length > 0 %}
-                    {% for tx in pending_deposits %}
-                    <div class="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <p class="text-2xl font-black text-green-600">+ ₹{{ tx.transaction_data.amount }}</p>
-                                <p class="text-sm text-gray-600 mt-1">Deposited by A/C: <span
-                                        class="font-mono font-bold text-gray-800">{{ tx.transaction_data.account_number
-                                        }}</span></p>
-                            </div>
-                            <form id="form-{{ tx._id }}" action="/agent/approve/{{ tx._id }}" method="POST">
-                                <button type="button" onclick="openModal('form-{{ tx._id }}')"
-                                    class="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-700 transition font-bold shadow-md transform hover:scale-105">
-                                    Authorize Deposit
-                                </button>
-                            </form>
-                        </div>
-                        <div
-                            class="bg-gray-900 text-green-400 p-3 rounded-lg font-mono text-xs overflow-x-auto shadow-inner">
-                            <p><strong>Hash Proof:</strong> {{ tx.hash }}</p>
-                        </div>
+    <div id="tab-deposits" class="tab-content active card border-t-emerald-500">
+        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6">Pending Cash Deposits</h3>
+        <div class="space-y-4">
+            {% for tx in pending_deposits %}
+            <div class="flex justify-between items-center p-5 bg-slate-50 border border-slate-100 rounded-xl">
+                <div>
+                    <p class="font-bold text-slate-800">{{ tx.sender_email }} <span
+                            class="font-normal text-slate-500 text-sm">requested deposit</span></p>
+                    <p class="text-xs text-slate-400 mt-1"><i class="fas fa-clock mr-1"></i> {{ tx.timestamp.slice(0,
+                        16).replace('T', ' ') }}</p>
+                </div>
+                <div class="text-right flex flex-col items-end gap-2">
+                    <p class="font-extrabold text-emerald-600 text-2xl">₹{{ tx.transaction_data.amount }}</p>
+                    <div class="flex gap-2">
+                        <form action="/agent/approve/{{ tx._id }}" method="POST"><button
+                                class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition shadow">Approve</button>
+                        </form>
+                        <form action="/agent/reject/{{ tx._id }}" method="POST"><button
+                                class="bg-red-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 transition shadow">Reject</button>
+                        </form>
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="bg-amber-50 border-l-4 border-amber-500 text-amber-800 p-6 rounded-r-lg" role="alert">
-                        <p class="font-medium text-lg">Queue is empty.</p>
-                        <p class="text-sm opacity-80 mt-1">No pending deposit verifications currently require attention.
-                        </p>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
+            {% else %}<p class="text-slate-400 italic">No pending deposits.</p>{% endfor %}
         </div>
     </div>
-</body>
 
-</html>
+    <div id="tab-ledger" class="tab-content card">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+            <h3 class="text-xl font-bold text-slate-800">Deposit Ledger</h3>
+            <form action="/agent/clear_history" method="POST" onsubmit="return confirm('Clear processed deposits?');">
+                <button type="submit"
+                    class="text-xs font-bold text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg transition border border-red-100"><i
+                        class="fas fa-trash-alt mr-1"></i> Clear Statement</button>
+            </form>
+        </div>
+        <div class="space-y-3">
+            {% for tx in history %}
+            <div
+                class="flex justify-between items-center p-4 bg-slate-50 rounded-xl opacity-80 border border-slate-200">
+                <div>
+                    <p class="text-sm font-bold text-slate-700">{{ tx.sender_email }}</p>
+                    <p class="text-xs text-slate-400 mt-1">{{ tx.timestamp.slice(0, 16).replace('T', ' ') }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-bold text-slate-800">₹{{ tx.transaction_data.amount }}</p>
+                    <p
+                        class="text-[10px] font-bold uppercase mt-1 {% if tx.transaction_data.status == 'approved' %}text-emerald-500{% else %}text-red-500{% endif %}">
+                        {{ tx.transaction_data.status }}</p>
+                </div>
+            </div>
+            {% else %}<p class="text-sm text-slate-400 italic">Ledger is empty.</p>{% endfor %}
+        </div>
+    </div>
+
+    <div id="tab-risk" class="tab-content card border-t-amber-500">
+        <h3 class="text-xl font-bold text-slate-800 mb-6">Risk Analysis</h3>
+        <div class="relative h-72 w-full"><canvas id="riskChart"></canvas></div>
+    </div>
+
+    <div id="tab-readonly" class="tab-content">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card border-t-red-500">
+                <h3 class="font-bold text-slate-800 mb-4">Locked Accounts</h3>
+                {% for u in blocked_users %}
+                <div class="bg-red-50 p-3 rounded-lg mb-2 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-sm">{{ u.email }}</p>
+                        <p class="text-[10px] text-red-600 font-bold mt-1">LOCKED BY SYSTEM</p>
+                    </div>
+                    <form action="/agent/unlock/{{ u._id }}" method="POST">
+                        <button
+                            class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-700 transition shadow">Unblock</button>
+                    </form>
+                </div>
+                {% else %}<p class="text-slate-400 italic text-sm">No locked accounts.</p>{% endfor %}
+            </div>
+
+            <div class="card border-t-amber-500">
+                <h3 class="font-bold text-slate-800 mb-4">Closure Requests (Read-Only)</h3>
+                {% for req in deletion_requests %}
+                <div class="bg-amber-50 p-3 rounded-lg mb-2">
+                    <p class="font-bold text-sm">{{ req.email }}</p>
+                    <p class="text-xs text-amber-700 italic mt-1">"{{ req.deletion_request.reason }}"</p>
+                </div>
+                {% else %}<p class="text-slate-400 italic text-sm">No requests.</p>{% endfor %}
+            </div>
+
+            <div class="card border-t-indigo-500">
+                <h3 class="font-bold text-slate-800 mb-4">Branch Transfers (Read-Only)</h3>
+                {% for req in branch_requests %}
+                <div class="bg-indigo-50 p-3 rounded-lg mb-2">
+                    <p class="font-bold text-sm">{{ req.email }}</p>
+                    <p class="text-xs text-indigo-700 font-medium mt-1">To: {{ req.branch_request.to_branch }} ({{
+                        req.branch_request.pincode }})</p>
+                </div>
+                {% else %}<p class="text-slate-400 italic text-sm">No requests.</p>{% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-directory" class="tab-content card border-t-emerald-500">
+        <h3 class="text-xl font-bold text-slate-800 mb-6"><i class="fas fa-id-card text-emerald-500 mr-2"></i> Global
+            User Directory</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for u in all_users %}
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+                <div class="flex justify-between items-start mb-4 border-b border-slate-200 pb-3">
+                    <div>
+                        <p class="font-black text-slate-800 text-lg">{{ u.email }}</p>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Bank: <span
+                                class="font-bold text-cyan-600">{{ u.bank }}</span> | Joined: {{ u.created_at.slice(0,
+                            10) if u.created_at else 'Legacy User' }}</p>
+                    </div>
+                    <span
+                        class="px-2 py-1 text-[9px] font-black rounded uppercase shadow-sm {% if u.status == 'active' %}bg-emerald-100 text-emerald-700 border border-emerald-200{% elif u.status == 'locked' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-amber-100 text-amber-700 border border-amber-200{% endif %}">{{
+                        u.status.replace('_', ' ') }}</span>
+                </div>
+                <div class="flex gap-4 mb-4">
+                    <div class="flex-1 text-center">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">ID Photo</p>
+                        {% if u.photo %}<img src="{{ u.photo }}"
+                            class="w-24 h-24 object-cover rounded-xl mx-auto border-2 border-white shadow-sm">{% else %}
+                        <div
+                            class="w-24 h-24 bg-slate-200 rounded-xl mx-auto flex items-center justify-center text-slate-400 border-2 border-white shadow-sm">
+                            <i class="fas fa-user-slash text-2xl"></i></div>{% endif %}
+                    </div>
+                    <div class="flex-1 text-center">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Biometric Scan
+                        </p>
+                        {% if u.fingerprint %}<img src="{{ u.fingerprint }}"
+                            class="w-24 h-24 object-cover rounded-xl mx-auto border-2 border-white shadow-sm bg-white p-1">{%
+                        else %}<div
+                            class="w-24 h-24 bg-slate-200 rounded-xl mx-auto flex items-center justify-center text-slate-400 border-2 border-white shadow-sm">
+                            <i class="fas fa-fingerprint text-2xl"></i></div>{% endif %}
+                    </div>
+                </div>
+                <div class="border-t border-slate-200 pt-4 text-center">
+                    <button onclick="document.getElementById('sig-{{ u._id }}').classList.toggle('hidden')"
+                        class="w-full text-xs font-bold bg-slate-800 text-white py-2.5 rounded-lg hover:bg-cyan-600 transition shadow-md"><i
+                            class="fas fa-file-signature mr-2"></i> Toggle Digital Signature</button>
+                    <div id="sig-{{ u._id }}"
+                        class="hidden mt-4 bg-white p-2 rounded-xl border border-slate-200 shadow-inner">{% if
+                        u.signature %}<img src="{{ u.signature }}" class="w-full h-16 object-contain">{% else %}<p
+                            class="text-xs text-red-500 italic py-2">No signature on file.</p>{% endif %}</div>
+                </div>
+            </div>
+            {% else %}<p class="text-slate-500 italic col-span-2">No registered users in the network.</p>{% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<input type="hidden" id="riskData" value="{{ riskData }}">
+<input type="hidden" id="riskLabels" value="{{ riskLabels }}">
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const riskChart = new Chart(document.getElementById('riskChart').getContext('2d'), { type: 'bar', data: { labels: JSON.parse(document.getElementById('riskLabels').value || '[]'), datasets: [{ label: 'High Risk (₹)', data: JSON.parse(document.getElementById('riskData').value || '[]'), backgroundColor: '#f59e0b', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false } });
+        document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', () => { setTimeout(() => { riskChart.resize(); }, 50); }); });
+    });
+</script>
+{% endblock %}

@@ -3,15 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Access - SecureChain</title>
+    <title>Login | SecureChain</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .slide-in-right {
-            animation: slideInFromRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
         }
 
-        @keyframes slideInFromRight {
+        @keyframes slideInRight {
             0% {
                 transform: translateX(100%);
                 opacity: 0;
@@ -23,160 +26,249 @@
             }
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
+        .slide-in-right {
+            animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
+        .branding-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #0891b2 100%);
+            position: relative;
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .branding-bg::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        input[type="file"]::file-selector-button {
+            border: none;
+            background: #0f172a;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: #0891b2;
         }
     </style>
+</head>
+
+<body class="bg-white flex h-screen w-full">
+
+    <div class="hidden lg:flex lg:w-1/2 branding-bg flex-col justify-between p-16 text-white z-0">
+        <div class="flex items-center gap-3"><i class="fas fa-shield-alt text-4xl text-cyan-300"></i>
+            <h1 class="text-3xl font-extrabold tracking-tight">SecureChain</h1>
+        </div>
+        <div>
+            <h2 class="text-5xl font-black leading-tight mb-6">Next-Generation<br>Banking Security.</h2>
+            <p class="text-cyan-100 text-lg max-w-md">Experience immutable ledger technology and real-time fraud
+                analysis.</p>
+        </div>
+        <div class="text-sm font-medium text-cyan-200/60">&copy; 2026 SecureChain Banking Network.</div>
+    </div>
+
+    <div
+        class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-20 slide-in-right z-10 bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.05)] overflow-y-auto no-scrollbar">
+        <div class="w-full max-w-md my-auto">
+            <div class="mb-10 text-center lg:text-left">
+                <h3 class="text-3xl font-extrabold text-slate-800 capitalize" id="formTitle">{{ role }} Access</h3>
+                <p class="text-slate-500 mt-2 font-medium" id="formSubtitle">Please enter your credentials.</p>
+            </div>
+
+            <div class="flex p-1 bg-slate-100 rounded-xl mb-8">
+                <button type="button" onclick="toggleForm('login')" id="btnLogin"
+                    class="flex-1 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm transition-all">Login</button>
+                <button type="button" onclick="toggleForm('register')" id="btnRegister"
+                    class="flex-1 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-800 transition-all">Register</button>
+            </div>
+
+            <form action="/login" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <input type="hidden" name="action" id="actionField" value="login">
+                <input type="hidden" name="role" value="{{ role }}">
+
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Email Address</label><input
+                        type="email" name="email" required
+                        class="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500 transition">
+                </div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Password</label><input
+                        type="password" name="password" required
+                        class="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500 transition">
+                </div>
+
+                <div id="registerFields" class="hidden space-y-4 border-t border-slate-100 pt-5 mt-2">
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">First
+                                Name</label><input type="text" name="first_name" id="firstNameInput"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 outline-none text-sm">
+                        </div>
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Last
+                                Name</label><input type="text" name="last_name" id="lastNameInput"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 outline-none text-sm">
+                        </div>
+                    </div>
+                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">Mobile
+                            Number</label><input type="text" name="mobile" id="mobileInput"
+                            class="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 outline-none text-sm focus:ring-2 focus:ring-cyan-500">
+                    </div>
+
+                    {% if role == 'user' %}
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">State</label>
+                            <select name="state" id="stateSelect" onchange="populateDistricts()"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 outline-none text-sm text-slate-700">
+                                <option value="">Select State...</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">District</label>
+                            <select name="district" id="districtSelect"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 outline-none text-sm text-slate-700">
+                                <option value="">Select State First...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">City / Town</label><input
+                            type="text" name="city" placeholder="Enter City Name" id="cityInput"
+                            class="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 outline-none text-sm focus:ring-2 focus:ring-cyan-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Bank</label>
+                        <select name="bank" id="bankInput"
+                            class="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50 outline-none font-bold text-slate-700">
+                            <option value="SBI">State Bank of India (SBI)</option>
+                            <option value="HDFC">HDFC Bank</option>
+                            <option value="AXIS">Axis Bank</option>
+                            <option value="CANARA">Canara Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p
+                            class="text-xs font-black text-slate-800 uppercase tracking-widest border-b border-slate-200 pb-2 mb-3">
+                            <i class="fas fa-id-card text-cyan-600 mr-2"></i> KYC Documents</p>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">User Photo
+                                (JPG/PNG)</label><input type="file" name="photo" accept="image/*"
+                                class="w-full text-sm text-slate-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">Biometric
+                                Fingerprint</label><input type="file" name="fingerprint" accept="image/*"
+                                class="w-full text-sm text-slate-500"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">Digital Signature</label><input
+                                type="file" name="signature" accept="image/*" class="w-full text-sm text-slate-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Account Type</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label
+                                class="flex items-center justify-center px-4 py-3 border border-slate-200 bg-slate-50 rounded-xl cursor-pointer hover:border-cyan-400"><input
+                                    type="radio" name="account_type" value="Savings Account" checked
+                                    class="text-cyan-600 w-4 h-4"><span
+                                    class="ml-2 text-sm font-bold text-slate-700">Savings</span></label>
+                            <label
+                                class="flex items-center justify-center px-4 py-3 border border-slate-200 bg-slate-50 rounded-xl cursor-pointer hover:border-cyan-400"><input
+                                    type="radio" name="account_type" value="Current Account"
+                                    class="text-cyan-600 w-4 h-4"><span
+                                    class="ml-2 text-sm font-bold text-slate-700">Current</span></label>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-[#0f172a] text-white font-bold py-4 rounded-xl hover:bg-cyan-600 transition-all mt-6 shadow-lg">Authenticate</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        window.onload = function () {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('role')) {
-                const role = params.get('role');
-                document.querySelectorAll('.role-input').forEach(input => input.value = role);
-                const displayRole = role.charAt(0).toUpperCase() + role.slice(1);
-                document.getElementById('form-title').innerText = displayRole + ' Portal Access';
+        const districtData = {
+            "Andhra Pradesh": ["Anantapur", "Chittoor", "East Godavari", "Guntur", "Krishna", "Kurnool", "Nellore", "Prakasam", "Srikakulam", "Visakhapatnam", "Vizianagaram", "West Godavari", "YSR Kadapa"],
+            "Telangana": ["Adilabad", "Hyderabad", "Karimnagar", "Khammam", "Mahbubnagar", "Nalgonda", "Nizamabad", "Warangal"],
+            "Karnataka": ["Bengaluru Urban", "Mysuru", "Mangaluru", "Hubballi", "Belagavi", "Ballari"],
+            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad"]
+        };
+
+        function populateDistricts() {
+            const stateSelect = document.getElementById("stateSelect");
+            const districtSelect = document.getElementById("districtSelect");
+            if (!stateSelect) return; // Ignore if not a user
+            const selectedState = stateSelect.value;
+            districtSelect.innerHTML = '<option value="">Select District...</option>';
+            if (selectedState && districtData[selectedState]) {
+                districtData[selectedState].forEach(function (district) {
+                    const option = document.createElement("option"); option.value = district; option.text = district;
+                    districtSelect.appendChild(option);
+                });
             }
         }
 
-        function switchTab(tab) {
-            document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+        function toggleForm(type) {
+            const actionField = document.getElementById('actionField');
+            const regFields = document.getElementById('registerFields');
+            const btnLogin = document.getElementById('btnLogin');
+            const btnRegister = document.getElementById('btnRegister');
+            const title = document.getElementById('formTitle');
+            const submitBtn = document.getElementById('submitBtn');
 
-            document.getElementById('tab-login').classList.toggle('border-blue-600', tab === 'login');
-            document.getElementById('tab-login').classList.toggle('text-blue-600', tab === 'login');
-            document.getElementById('tab-register').classList.toggle('border-blue-600', tab === 'register');
-            document.getElementById('tab-register').classList.toggle('text-blue-600', tab === 'register');
+            // Required Field Elements
+            const fnInput = document.getElementById('firstNameInput');
+            const lnInput = document.getElementById('lastNameInput');
+            const moInput = document.getElementById('mobileInput');
+            const bnkInput = document.getElementById('bankInput');
+            const stSelect = document.getElementById('stateSelect');
+            const ctyInput = document.getElementById('cityInput');
+
+            if (type === 'register') {
+                actionField.value = 'register'; regFields.classList.remove('hidden');
+
+                fnInput.required = true; lnInput.required = true; moInput.required = true;
+                if (bnkInput) { bnkInput.required = true; stSelect.required = true; ctyInput.required = true; }
+
+                title.innerText = 'Create Account'; submitBtn.innerText = 'Register Now';
+                btnRegister.classList.add('bg-white', 'text-slate-800', 'shadow-sm'); btnRegister.classList.remove('text-slate-500');
+                btnLogin.classList.remove('bg-white', 'text-slate-800', 'shadow-sm'); btnLogin.classList.add('text-slate-500');
+            } else {
+                actionField.value = 'login'; regFields.classList.add('hidden');
+
+                fnInput.required = false; lnInput.required = false; moInput.required = false;
+                if (bnkInput) { bnkInput.required = false; stSelect.required = false; ctyInput.required = false; }
+
+                title.innerText = '{{ role }} Access'; submitBtn.innerText = 'Authenticate';
+                btnLogin.classList.add('bg-white', 'text-slate-800', 'shadow-sm'); btnLogin.classList.remove('text-slate-500');
+                btnRegister.classList.remove('bg-white', 'text-slate-800', 'shadow-sm'); btnRegister.classList.add('text-slate-500');
+            }
         }
     </script>
-</head>
-
-<body class="bg-gray-50 font-sans text-gray-800 overflow-hidden">
-
-    <div class="min-h-screen flex">
-
-        <div class="hidden md:flex md:w-1/2 bg-cover bg-center relative z-0"
-            style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=80');">
-            <div
-                class="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-gray-900/90 flex flex-col justify-between p-12">
-                <div class="flex items-center space-x-2 text-white">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                        </path>
-                    </svg>
-                    <h1 class="text-2xl font-bold tracking-wider">SecureChain</h1>
-                </div>
-
-                <div class="text-white space-y-6 max-w-md">
-                    <h2 class="text-4xl font-extrabold leading-tight">Secure your financial future.</h2>
-                    <p class="text-blue-200 text-lg">Access your blockchain-secured account. Every transaction is
-                        cryptographically verified for absolute peace of mind.</p>
-                </div>
-
-                <div class="text-blue-300 text-sm">
-                    &copy; 2026 SecureChain Systems. <br> Protected by SHA-256 Protocol.
-                </div>
-            </div>
-        </div>
-
-        <div
-            class="w-full md:w-1/2 flex items-center justify-center p-8 bg-white z-10 slide-in-right shadow-[-20px_0_30px_-15px_rgba(0,0,0,0.3)]">
-            <div class="w-full max-w-md space-y-6">
-
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-extrabold text-gray-900" id="form-title">Portal Access</h2>
-                    <p class="mt-2 text-sm text-gray-500">Please authenticate to access the secure ledger.</p>
-                </div>
-
-                <div class="flex border-b border-gray-200 mb-6 cursor-pointer">
-                    <div id="tab-login" onclick="switchTab('login')"
-                        class="flex-1 text-center py-3 font-semibold border-b-2 border-blue-600 text-blue-600 transition">
-                        Sign In</div>
-                    <div id="tab-register" onclick="switchTab('register')"
-                        class="flex-1 text-center py-3 font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition">
-                        Create Account</div>
-                </div>
-
-                <form id="login-form" action="/login" method="POST" class="space-y-5 animate-fade-in">
-                    <input type="hidden" name="role" class="role-input" value="user">
-                    <input type="hidden" name="action" value="login">
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" name="email" required placeholder="you@example.com"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" name="password" required placeholder="••••••••"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none transition">
-                    </div>
-                    <button type="submit"
-                        class="w-full flex justify-center py-3 px-4 rounded-lg shadow-md text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition transform hover:-translate-y-0.5 mt-2">
-                        Sign In to Secure Dashboard
-                    </button>
-                </form>
-
-                <form id="register-form" action="/login" method="POST" class="space-y-5 hidden animate-fade-in">
-                    <input type="hidden" name="role" class="role-input" value="user">
-                    <input type="hidden" name="action" value="register">
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" name="email" required placeholder="you@example.com"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" name="password" required placeholder="Create a secure password"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Partner Bank Selection</label>
-                        <select name="role" aria-label="Select your account role" class="...">
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600
-                            outline-none bg-white cursor-pointer transition">
-                            <option value="" disabled selected>Select your banking provider...</option>
-                            <option value="Axis Bank">Axis Bank</option>
-                            <option value="Canara Bank">Canara Bank</option>
-                            <option value="SBI">State Bank of India (SBI)</option>
-                            <option value="HDFC Bank">HDFC Bank</option>
-                        </select>
-                        <p class="text-xs text-gray-500 mt-2">Your blockchain identity will be tethered to this
-                            institution.</p>
-                    </div>
-                    <button type="submit"
-                        class="w-full flex justify-center py-3 px-4 rounded-lg shadow-md text-sm font-bold text-white bg-gray-900 hover:bg-black transition transform hover:-translate-y-0.5 mt-2">
-                        Register Account
-                    </button>
-                </form>
-
-                <div class="text-center mt-8">
-                    <a href="/"
-                        class="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center transition">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Return to Homepage
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    </div>
 </body>
 
 </html>
